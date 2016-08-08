@@ -114,10 +114,10 @@
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
       this._ctx.strokeRect(
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2);
+          Math.round((-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2),
+          Math.round((-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2),
+          Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2),
+          Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2));
 
       //Отрисовка вертикальных и горизонтальных прямоугольников вокруг области
       // кадрирования, обозначающих черный слой с прозрачностью 80%. Координаты левого
@@ -125,27 +125,27 @@
       var lineWidthKadr = this._ctx.lineWidth;
       this._ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
       this._ctx.fillRect(
-          -this._container.width / 2, -this._container.height / 2,
-          this._container.width / 2 - (this._resizeConstraint.side / 2 + lineWidthKadr),
-          this._container.height);
+          Math.round(-this._container.width / 2), Math.round(-this._container.height / 2),
+          Math.round(this._container.width / 2 - (this._resizeConstraint.side / 2 + lineWidthKadr)),
+          Math.round(this._container.height));
 
       this._ctx.fillRect(
-          this._resizeConstraint.side / 2 - lineWidthKadr / 2,
-          -this._container.height / 2,
-          this._container.width / 2 - (this._resizeConstraint.side / 2 - lineWidthKadr / 2),
-          this._container.height);
+          Math.round(this._resizeConstraint.side / 2 - lineWidthKadr / 2),
+          Math.round(-this._container.height / 2),
+          Math.round(this._container.width / 2 - (this._resizeConstraint.side / 2 - lineWidthKadr / 2)),
+          Math.round(this._container.height));
 
       this._ctx.fillRect(
-          (-this._resizeConstraint.side / 2) - lineWidthKadr,
-          -this._container.height / 2,
-          this._resizeConstraint.side + lineWidthKadr / 2,
-          this._container.height / 2 - (this._resizeConstraint.side / 2 + lineWidthKadr));
+          Math.round((-this._resizeConstraint.side / 2) - lineWidthKadr),
+          Math.round(-this._container.height / 2),
+          Math.floor(this._resizeConstraint.side + lineWidthKadr / 2),
+          Math.round(this._container.height / 2 - (this._resizeConstraint.side / 2 + lineWidthKadr)));
 
       this._ctx.fillRect(
-          (-this._resizeConstraint.side / 2) - lineWidthKadr,
-          (this._resizeConstraint.side / 2) - lineWidthKadr / 2,
-          this._resizeConstraint.side + lineWidthKadr / 2,
-          this._container.height / 2 - (this._resizeConstraint.side / 2 - lineWidthKadr / 2));
+          Math.round((-this._resizeConstraint.side / 2) - lineWidthKadr),
+          Math.round((this._resizeConstraint.side / 2) - lineWidthKadr / 2),
+          Math.floor(this._resizeConstraint.side + lineWidthKadr / 2),
+          Math.round(this._container.height / 2 - (this._resizeConstraint.side / 2 - lineWidthKadr / 2)));
 
       //Вывод текста с размерами изображения
       var _width = this._container.width + ' ';
