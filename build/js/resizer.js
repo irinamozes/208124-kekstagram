@@ -168,30 +168,18 @@
     _kadrBorderDotDrow: function(x, y, r, d, s) {
 
       //Отрисовка левой верхней точки
-      this._ctx.beginPath();
-      this._ctx.arc(x, y, r, 0, Math.PI * 2, false);
-      this._ctx.closePath();
-      this._ctx.fill();
+      this._kadrCornerSideDotDrow(x, y, r);
 
       //Отрисовка правой верхней точки
-      this._ctx.beginPath();
-      this._ctx.arc(x + s + r, y, r, 0, Math.PI * 2, false);
-      this._ctx.closePath();
-      this._ctx.fill();
+      this._kadrCornerSideDotDrow(x + s + r, y, r);
 
       //Отрисовка левой нижней точки
-      this._ctx.beginPath();
-      this._ctx.arc(x, y + s + r, r, 0, Math.PI * 2, false);
-      this._ctx.closePath();
-      this._ctx.fill();
+      this._kadrCornerSideDotDrow(x, y + s + r, r);
 
       //Отрисовка правой нижней точки
-      this._ctx.beginPath();
-      this._ctx.arc(x + s + r, y + s + r, r, 0, Math.PI * 2, false);
-      this._ctx.closePath();
-      this._ctx.fill();
+      this._kadrCornerSideDotDrow(x + s + r, y + s + r, r);
 
-      //Расчет количества точек на длине s  и пустого интервала d между ними
+      //Расчет количества точек на длине s
       var _numberDotInt = Math.floor(s / (2 * r + d)) - 1;
       var _numberDot = (s / (2 * r + d)) - 1;
       var _d = _numberDot - _numberDotInt;
@@ -199,42 +187,28 @@
         _numberDotInt = _numberDotInt + 1;
       }
 
-      var _x;
-      var _y;
+      //Отрисовка сторон квадрата кадра
       for (var i = 1; i <= _numberDotInt; i++) {
         //Отрисовка верхней горизонтальной линии
-        this._ctx.beginPath();
-        _x = x + i * (2 * r + d);
-        _y = y;
-        this._ctx.arc(_x, _y, r, 0, Math.PI * 2, false);
-        this._ctx.closePath();
-        this._ctx.fill();
+        this._kadrCornerSideDotDrow(x + i * (2 * r + d), y, r);
 
         //Отрисовка нижней горизонтальной линии
-        this._ctx.beginPath();
-        _x = x + i * (2 * r + d);
-        _y = y + s + r;
-        this._ctx.arc(_x, _y, r, 0, Math.PI * 2, false);
-        this._ctx.closePath();
-        this._ctx.fill();
+        this._kadrCornerSideDotDrow(x + i * (2 * r + d), y + s + r, r);
 
         //Отрисовка левой вертикальной линии
-        this._ctx.beginPath();
-        _x = x;
-        _y = y + i * (2 * r + d);
-        this._ctx.arc(_x, _y, r, 0, Math.PI * 2, false);
-        this._ctx.closePath();
-        this._ctx.fill();
+        this._kadrCornerSideDotDrow(x, y + i * (2 * r + d), r);
 
         //Отрисовка правой вертикальной линии
-        this._ctx.beginPath();
-        _x = x + s + r;
-        _y = y + i * (2 * r + d);
-        this._ctx.arc(_x, _y, r, 0, Math.PI * 2, false);
-        this._ctx.closePath();
-        this._ctx.fill();
+        this._kadrCornerSideDotDrow(x + s + r, y + i * (2 * r + d), r);
 
       }
+    },
+
+    _kadrCornerSideDotDrow: function(x, y, r) {
+      this._ctx.beginPath();
+      this._ctx.arc(x, y, r, 0, Math.PI * 2, false);
+      this._ctx.closePath();
+      this._ctx.fill();
     },
 
     /**
