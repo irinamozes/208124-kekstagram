@@ -88,16 +88,14 @@
       // canvas'a поэтому важно вовремя поменять их, если нужно начать отрисовку
       // чего-либо с другой обводкой.
 
+      // Радиус точки
+      // Интервал между точками
+      this._ctx.r = 3;
+      this._ctx.d = 6;
       // Толщина линии.
-      this._ctx.lineWidth = 6;
-      // Цвет обводки.
-      this._ctx.strokeStyle = '#ffe753';
-      // Размер штрихов. Первый элемент массива задает длину штриха, второй
-      // расстояние между соседними штрихами.
-      this._ctx.setLineDash([15, 10]);
-      // Смещение первого штриха от начала линии.
-      this._ctx.lineDashOffset = 7;
+      this._ctx.lineWidth = 2 * this._ctx.r;
 
+      this._ctx.fillStyle = '#ffe753'; // Цвет заливки
       // Сохранение состояния канваса.
       this._ctx.save();
 
@@ -111,13 +109,15 @@
       // Координаты задаются от центра холста.
       this._ctx.drawImage(this._image, displX, displY);
 
-      // Отрисовка прямоугольника, обозначающего область изображения после
+      // Отрисовка квадрата, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
-      this._ctx.strokeRect(
-          Math.round((-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2),
-          Math.round((-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2),
-          Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2),
-          Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2));
+      // x, y - координаты левого верхнего угла квадрата,
+      // s - длина стороны квадрата между центрами первой и последней точки.
+      var x = Math.round((-this._resizeConstraint.side / 2) - this._ctx.r);
+      var y = Math.round((-this._resizeConstraint.side / 2) - this._ctx.r);
+      var s = this._resizeConstraint.side - 2 * this._ctx.r;
+
+      this._kadrBorderDotDrow(x, y, this._ctx.r, this._ctx.d, s);
 
       //Отрисовка вертикальных и горизонтальных прямоугольников вокруг области
       // кадрирования, обозначающих черный слой с прозрачностью 80%. Координаты левого
@@ -163,6 +163,52 @@
       // некорректно сработает даже очистка холста или нужно будет использовать
       // сложные рассчеты для координат прямоугольника, который нужно очистить.
       this._ctx.restore();
+    },
+
+    _kadrBorderDotDrow: function(x, y, r, d, s) {
+
+      //Отрисовка левой верхней точки
+      this._kadrCornerSideDotDrow(x, y, r);
+
+      //Отрисовка правой верхней точки
+      this._kadrCornerSideDotDrow(x + s + r, y, r);
+
+      //Отрисовка левой нижней точки
+      this._kadrCornerSideDotDrow(x, y + s + r, r);
+
+      //Отрисовка правой нижней точки
+      this._kadrCornerSideDotDrow(x + s + r, y + s + r, r);
+
+      //Расчет количества точек на длине s
+      var _numberDotInt = Math.floor(s / (2 * r + d)) - 1;
+      var _numberDot = (s / (2 * r + d)) - 1;
+      var _d = _numberDot - _numberDotInt;
+      if(_d > 0) {
+        _numberDotInt = _numberDotInt + 1;
+      }
+
+      //Отрисовка сторон квадрата кадра
+      for (var i = 1; i <= _numberDotInt; i++) {
+        //Отрисовка верхней горизонтальной линии
+        this._kadrCornerSideDotDrow(x + i * (2 * r + d), y, r);
+
+        //Отрисовка нижней горизонтальной линии
+        this._kadrCornerSideDotDrow(x + i * (2 * r + d), y + s + r, r);
+
+        //Отрисовка левой вертикальной линии
+        this._kadrCornerSideDotDrow(x, y + i * (2 * r + d), r);
+
+        //Отрисовка правой вертикальной линии
+        this._kadrCornerSideDotDrow(x + s + r, y + i * (2 * r + d), r);
+
+      }
+    },
+
+    _kadrCornerSideDotDrow: function(x, y, r) {
+      this._ctx.beginPath();
+      this._ctx.arc(x, y, r, 0, Math.PI * 2, false);
+      this._ctx.closePath();
+      this._ctx.fill();
     },
 
     /**
