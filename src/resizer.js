@@ -87,15 +87,21 @@
       // NB! Такие параметры сохраняются на время всего процесса отрисовки
       // canvas'a поэтому важно вовремя поменять их, если нужно начать отрисовку
       // чего-либо с другой обводкой.
-
-      // Радиус точки
-      // Интервал между точками
-      this._ctx.r = 3;
-      this._ctx.d = 6;
+      // Высота зигзага
+      var h = 7;
+      // Ширина зигзага
+      var d = 8;
       // Толщина линии.
-      this._ctx.lineWidth = 2 * this._ctx.r;
+      this._ctx.lineWidth = 2;
+      // Цвет обводки.
+      this._ctx.strokeStyle = '#ffe753';
+      this._ctx.fillStyle = '#00FF00';
+      // Размер штрихов. Первый элемент массива задает длину штриха, второй
+      // расстояние между соседними штрихами.
+      //this._ctx.setLineDash([15, 10]);
+      // Смещение первого штриха от начала линии.
+      //this._ctx.lineDashOffset = 7;
 
-      this._ctx.fillStyle = '#ffe753'; // Цвет заливки
       // Сохранение состояния канваса.
       this._ctx.save();
 
@@ -109,15 +115,73 @@
       // Координаты задаются от центра холста.
       this._ctx.drawImage(this._image, displX, displY);
 
-      // Отрисовка квадрата, обозначающего область изображения после
+      // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
-      // x, y - координаты левого верхнего угла квадрата,
-      // s - длина стороны квадрата между центрами первой и последней точки.
-      var x = Math.round((-this._resizeConstraint.side / 2) - this._ctx.r);
-      var y = Math.round((-this._resizeConstraint.side / 2) - this._ctx.r);
-      var s = this._resizeConstraint.side - 2 * this._ctx.r;
+      //this._ctx.strokeRect(
+          //Math.round((-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2),
+          //Math.round((-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2),
+          //Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2),
+          //Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2));
+      //console.log(Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2));
 
-      this._kadrBorderDotDrow(x, y, this._ctx.r, this._ctx.d, s);
+      //Задание четырёх точек
+      var cornerDotX = [];
+      var cornerDotY = [];
+      //Левая верхняя
+      cornerDotX[0] = Math.round(-this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2);
+      cornerDotY[0] = Math.round(-this._resizeConstraint.side / 2 + h - this._ctx.lineWidth / 2);
+
+      //Правая верхняя
+      cornerDotX[1] = Math.round(this._resizeConstraint.side / 2 - this._ctx.lineWidth);
+      cornerDotY[1] = Math.round(-this._resizeConstraint.side / 2 + h - this._ctx.lineWidth / 2);
+
+      //Левая нижняя
+      cornerDotX[2] = Math.round(-this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2);
+      cornerDotY[2] = Math.ceil(this._resizeConstraint.side / 2 - h - 2 * this._ctx.lineWidth);
+
+      //Правая нижняя
+      cornerDotX[3] = Math.round(this._resizeConstraint.side / 2 - this._ctx.lineWidth);
+      cornerDotY[3] = Math.ceil(this._resizeConstraint.side / 2 - h - 2 * this._ctx.lineWidth);
+
+      var widthKadr = Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2);
+      var heightKadr = Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2) - 2 * h;
+
+      var s = 0;
+      var s1;
+      //Отрисовка верхней и нижней горизонтальных границ.
+      while (s <= widthKadr - 2 * d) {
+        s1 = s;
+        this.zigzag(cornerDotX[0] + s, cornerDotY[0], cornerDotX[0] + s + d / 2, cornerDotY[0] - h, cornerDotX[0] + s + d, cornerDotY[0]);
+        this.zigzag(cornerDotX[2] + s, cornerDotY[2], cornerDotX[2] + s + d / 2, cornerDotY[2] + h, cornerDotX[2] + s + d, cornerDotY[2]);
+        s = s + d;
+      }
+      //Отрисовка последнего зигзага верхней горизонтальной границы.
+      //Середина ширины последнего зигзага
+      var d2 = Math.round((cornerDotX[1] - (cornerDotX[0] + s1 + d)) / 2);
+      this.zigzag(cornerDotX[0] + s1 + d, cornerDotY[0], cornerDotX[0] + s1 + d + d2, cornerDotY[0] - h, cornerDotX[1], cornerDotY[1]);
+
+      //Отрисовка последнего зигзага нижней горизонтальной границы.
+      //Середина ширины последнего зигзага
+      d2 = Math.round((cornerDotX[3] - (cornerDotX[2] + s1 + d)) / 2);
+      this.zigzag(cornerDotX[2] + s1 + d, cornerDotY[2], cornerDotX[2] + s1 + d + d2, cornerDotY[2] + h, cornerDotX[3], cornerDotY[3]);
+
+      //Отрисовка левой и правой вертикальных границ.
+      s = 0;
+      while (s <= heightKadr - 2 * d) {
+        s1 = s;
+        this.zigzag(cornerDotX[0], cornerDotY[0] + s, cornerDotX[0] + h, cornerDotY[0] + s + d / 2, cornerDotX[0], cornerDotY[0] + s + d);
+        this.zigzag(cornerDotX[1], cornerDotY[1] + s, cornerDotX[1] - h, cornerDotY[0] + s + d / 2, cornerDotX[1], cornerDotY[1] + s + d);
+        s = s + d;
+      }
+      //Отрисовка последнего зигзага левой вертикальной границы.
+      //Середина ширины последнего зигзага
+      d2 = Math.round((cornerDotY[2] - (cornerDotY[0] + s1 + d)) / 2);
+      this.zigzag(cornerDotX[0], cornerDotY[0] + s1 + d, cornerDotX[0] + h, cornerDotY[0] + s1 + d + d2, cornerDotX[2], cornerDotY[2]);
+
+      //Отрисовка последнего зигзага правой вертикальной границы.
+      //Середина ширины последнего зигзага
+      d2 = Math.round((cornerDotY[3] - (cornerDotY[1] + s1 + d)) / 2);
+      this.zigzag(cornerDotX[1], cornerDotY[1] + s1 + d, cornerDotX[1] - h, cornerDotY[1] + s1 + d + d2, cornerDotX[3], cornerDotY[3]);
 
       //Отрисовка вертикальных и горизонтальных прямоугольников вокруг области
       // кадрирования, обозначающих черный слой с прозрачностью 80%. Координаты левого
@@ -138,13 +202,13 @@
       this._ctx.fillRect(
           Math.round((-this._resizeConstraint.side / 2) - lineWidthKadr),
           Math.round(-this._container.height / 2),
-          Math.floor(this._resizeConstraint.side + lineWidthKadr / 2),
+          Math.ceil(this._resizeConstraint.side + lineWidthKadr / 2),
           Math.round(this._container.height / 2 - (this._resizeConstraint.side / 2 + lineWidthKadr)));
 
       this._ctx.fillRect(
           Math.round((-this._resizeConstraint.side / 2) - lineWidthKadr),
           Math.round((this._resizeConstraint.side / 2) - lineWidthKadr / 2),
-          Math.floor(this._resizeConstraint.side + lineWidthKadr / 2),
+          Math.ceil(this._resizeConstraint.side + lineWidthKadr / 2),
           Math.round(this._container.height / 2 - (this._resizeConstraint.side / 2 - lineWidthKadr / 2)));
 
       //Вывод текста с размерами изображения
@@ -165,50 +229,14 @@
       this._ctx.restore();
     },
 
-    _kadrBorderDotDrow: function(x, y, r, d, s) {
-
-      //Отрисовка левой верхней точки
-      this._kadrCornerSideDotDrow(x, y, r);
-
-      //Отрисовка правой верхней точки
-      this._kadrCornerSideDotDrow(x + s + r, y, r);
-
-      //Отрисовка левой нижней точки
-      this._kadrCornerSideDotDrow(x, y + s + r, r);
-
-      //Отрисовка правой нижней точки
-      this._kadrCornerSideDotDrow(x + s + r, y + s + r, r);
-
-      //Расчет количества точек на длине s
-      var _numberDotInt = Math.floor(s / (2 * r + d)) - 1;
-      var _numberDot = (s / (2 * r + d)) - 1;
-      var _d = _numberDot - _numberDotInt;
-      if(_d > 0) {
-        _numberDotInt = _numberDotInt + 1;
-      }
-
-      //Отрисовка сторон квадрата кадра
-      for (var i = 1; i <= _numberDotInt; i++) {
-        //Отрисовка верхней горизонтальной линии
-        this._kadrCornerSideDotDrow(x + i * (2 * r + d), y, r);
-
-        //Отрисовка нижней горизонтальной линии
-        this._kadrCornerSideDotDrow(x + i * (2 * r + d), y + s + r, r);
-
-        //Отрисовка левой вертикальной линии
-        this._kadrCornerSideDotDrow(x, y + i * (2 * r + d), r);
-
-        //Отрисовка правой вертикальной линии
-        this._kadrCornerSideDotDrow(x + s + r, y + i * (2 * r + d), r);
-
-      }
-    },
-
-    _kadrCornerSideDotDrow: function(x, y, r) {
+    zigzag: function(x1, y1, x2, y2, x3, y3) {
       this._ctx.beginPath();
-      this._ctx.arc(x, y, r, 0, Math.PI * 2, false);
+      this._ctx.moveTo(x1, y1); // Начало линии
+      this._ctx.lineTo(x2, y2); // Узел линии
+      this._ctx.stroke();
+      this._ctx.lineTo(x3, y3); // Конец линии
+      this._ctx.stroke();
       this._ctx.closePath();
-      this._ctx.fill();
     },
 
     /**
