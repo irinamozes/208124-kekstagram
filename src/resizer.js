@@ -109,69 +109,34 @@
       // Координаты задаются от центра холста.
       this._ctx.drawImage(this._image, displX, displY);
 
-      //Задание четырёх угловых точек рамки кадра
-      var cornerDotX = [];
-      var cornerDotY = [];
+      //Задание координат четырёх угловых точек рамки кадра в массивах cX и cY
+      var cX = [];
+      var cY = [];
 
       //Левая верхняя
-      cornerDotX[0] = this.cornerX(-1, 2);
-      cornerDotY[0] = this.cornerY(-1, 2, h);
+      cX[0] = this.cornerX(-1, 2);
+      cY[0] = this.cornerY(-1, 2, h);
 
       //Правая верхняя
-      cornerDotX[1] = this.cornerX(1, 1);
-      cornerDotY[1] = this.cornerY(-1, 2, h);
+      cX[1] = this.cornerX(1, 1);
+      cY[1] = this.cornerY(-1, 2, h);
 
       //Левая нижняя
-      cornerDotX[2] = this.cornerX(-1, 2);
-      cornerDotY[2] = this.cornerY(1, 1, h);
+      cX[2] = this.cornerX(-1, 2);
+      cY[2] = this.cornerY(1, 1, h);
 
       //Правая нижняя
-      cornerDotX[3] = this.cornerX(1, 1);
-      cornerDotY[3] = this.cornerY(1, 1, h);
+      cX[3] = this.cornerX(1, 1);
+      cY[3] = this.cornerY(1, 1, h);
 
       var widthKadr = Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2);
       var heightKadr = Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2) - 2 * h;
 
-      var s = 0;
-      var s1;
       //Отрисовка верхней и нижней горизонтальных границ.
-      while (s <= widthKadr - 3 * d) {
-        s1 = s;
-        this.zigzag(cornerDotX[0] + s, cornerDotY[0], cornerDotX[0] + s + d / 2, cornerDotY[0] - h, cornerDotX[0] + s + d, cornerDotY[0]);
-        this.zigzag(cornerDotX[2] + s, cornerDotY[2], cornerDotX[2] + s + d / 2, cornerDotY[2] + h, cornerDotX[2] + s + d, cornerDotY[2]);
-        s = s + d;
-      }
-      //Отрисовка 2-х последних зигзагов верхней горизонтальной границы.
-      //Четвертая часть  ширины двух последних зигзагов
-      var d4 = Math.round((cornerDotX[1] - (cornerDotX[0] + s1 + d)) / 4);
-      this.zigzag(cornerDotX[0] + s1 + d, cornerDotY[0], cornerDotX[0] + s1 + d + d4, cornerDotY[0] - h, cornerDotX[0] + s1 + d + 2 * d4, cornerDotY[0]);
-      this.zigzag(cornerDotX[0] + s1 + d + 2 * d4, cornerDotY[0], cornerDotX[0] + s1 + d + 3 * d4, cornerDotY[0] - h, cornerDotX[1], cornerDotY[1]);
-
-      //Отрисовка 2-х последних зигзагов нижней горизонтальной границы.
-      //Четвертая часть  ширины двух последних зигзагов
-      d4 = Math.round((cornerDotX[3] - (cornerDotX[2] + s1 + d)) / 4);
-      this.zigzag(cornerDotX[2] + s1 + d, cornerDotY[2], cornerDotX[2] + s1 + d + d4, cornerDotY[2] + h, cornerDotX[2] + s1 + d + 2 * d4, cornerDotY[2]);
-      this.zigzag(cornerDotX[2] + s1 + d + 2 * d4, cornerDotY[2], cornerDotX[2] + s1 + d + 3 * d4, cornerDotY[2] + h, cornerDotX[3], cornerDotY[3]);
+      this.horizontLineDrow(widthKadr, d, h, cX, cY);
 
       //Отрисовка левой и правой вертикальных границ.
-      s = 0;
-      while (s <= heightKadr - 3 * d) {
-        s1 = s;
-        this.zigzag(cornerDotX[0], cornerDotY[0] + s, cornerDotX[0] + h, cornerDotY[0] + s + d / 2, cornerDotX[0], cornerDotY[0] + s + d);
-        this.zigzag(cornerDotX[1], cornerDotY[1] + s, cornerDotX[1] - h, cornerDotY[0] + s + d / 2, cornerDotX[1], cornerDotY[1] + s + d);
-        s = s + d;
-      }
-      //Отрисовка 2-х последних зигзагов левой вертикальной границы.
-      //Четвертая часть  ширины двух последних зигзагов
-      d4 = Math.round((cornerDotY[2] - (cornerDotY[0] + s1 + d)) / 4);
-      this.zigzag(cornerDotX[0], cornerDotY[0] + s1 + d, cornerDotX[0] + h, cornerDotY[0] + s1 + d + d4, cornerDotX[0], cornerDotY[0] + s1 + d + 2 * d4);
-      this.zigzag(cornerDotX[0], cornerDotY[0] + s1 + d + 2 * d4, cornerDotX[0] + h, cornerDotY[0] + s1 + d + 3 * d4, cornerDotX[2], cornerDotY[2]);
-
-      //Отрисовка 2-х последних зигзагов правой вертикальной границы.
-      //Четвертая часть  ширины двух последних зигзагов
-      d4 = Math.round((cornerDotY[3] - (cornerDotY[1] + s1 + d)) / 4);
-      this.zigzag(cornerDotX[1], cornerDotY[1] + s1 + d, cornerDotX[1] - h, cornerDotY[1] + s1 + d + d4, cornerDotX[1], cornerDotY[1] + s1 + d + 2 * d4);
-      this.zigzag(cornerDotX[1], cornerDotY[1] + s1 + d + 2 * d4, cornerDotX[1] - h, cornerDotY[1] + s1 + d + 3 * d4, cornerDotX[3], cornerDotY[3]);
+      this.verticalLineDrow(heightKadr, d, h, cX, cY);
 
       //Отрисовка вертикальных и горизонтальных прямоугольников вокруг области
       // кадрирования, обозначающих черный слой с прозрачностью 80%. Координаты левого
@@ -229,6 +194,50 @@
     cornerY: function(k, l, h) {
       var cornery = Math.round(k * this._resizeConstraint.side / 2 - k * h - this._ctx.lineWidth / l);
       return cornery;
+    },
+
+    horizontLineDrow: function(widthKadr, d, h, cX, cY) {
+      var s = 0;
+      var s1;
+      while (s <= widthKadr - 3 * d) {
+        s1 = s;
+        this.zigzag(cX[0] + s, cY[0], cX[0] + s + d / 2, cY[0] - h, cX[0] + s + d, cY[0]);
+        this.zigzag(cX[2] + s, cY[2], cX[2] + s + d / 2, cY[2] + h, cX[2] + s + d, cY[2]);
+        s = s + d;
+      }
+      //Отрисовка 2-х последних зигзагов верхней горизонтальной границы.
+      //Четвертая часть  ширины двух последних зигзагов
+      var d4 = Math.round((cX[1] - (cX[0] + s1 + d)) / 4);
+      this.zigzag(cX[0] + s1 + d, cY[0], cX[0] + s1 + d + d4, cY[0] - h, cX[0] + s1 + d + 2 * d4, cY[0]);
+      this.zigzag(cX[0] + s1 + d + 2 * d4, cY[0], cX[0] + s1 + d + 3 * d4, cY[0] - h, cX[1], cY[1]);
+
+      //Отрисовка 2-х последних зигзагов нижней горизонтальной границы.
+      //Четвертая часть  ширины двух последних зигзагов
+      d4 = Math.round((cX[3] - (cX[2] + s1 + d)) / 4);
+      this.zigzag(cX[2] + s1 + d, cY[2], cX[2] + s1 + d + d4, cY[2] + h, cX[2] + s1 + d + 2 * d4, cY[2]);
+      this.zigzag(cX[2] + s1 + d + 2 * d4, cY[2], cX[2] + s1 + d + 3 * d4, cY[2] + h, cX[3], cY[3]);
+    },
+
+    verticalLineDrow: function(heightKadr, d, h, cX, cY) {
+      var s = 0;
+      var s1;
+      while (s <= heightKadr - 3 * d) {
+        s1 = s;
+        this.zigzag(cX[0], cY[0] + s, cX[0] + h, cY[0] + s + d / 2, cX[0], cY[0] + s + d);
+        this.zigzag(cX[1], cY[1] + s, cX[1] - h, cY[0] + s + d / 2, cX[1], cY[1] + s + d);
+        s = s + d;
+      }
+      //Отрисовка 2-х последних зигзагов левой вертикальной границы.
+      //Четвертая часть  ширины двух последних зигзагов
+      var d4 = Math.round((cY[2] - (cY[0] + s1 + d)) / 4);
+      this.zigzag(cX[0], cY[0] + s1 + d, cX[0] + h, cY[0] + s1 + d + d4, cX[0], cY[0] + s1 + d + 2 * d4);
+      this.zigzag(cX[0], cY[0] + s1 + d + 2 * d4, cX[0] + h, cY[0] + s1 + d + 3 * d4, cX[2], cY[2]);
+
+      //Отрисовка 2-х последних зигзагов правой вертикальной границы.
+      //Четвертая часть  ширины двух последних зигзагов
+      d4 = Math.round((cY[3] - (cY[1] + s1 + d)) / 4);
+      this.zigzag(cX[1], cY[1] + s1 + d, cX[1] - h, cY[1] + s1 + d + d4, cX[1], cY[1] + s1 + d + 2 * d4);
+      this.zigzag(cX[1], cY[1] + s1 + d + 2 * d4, cX[1] - h, cY[1] + s1 + d + 3 * d4, cX[3], cY[3]);
     },
 
 
