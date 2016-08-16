@@ -88,9 +88,9 @@
       // canvas'a поэтому важно вовремя поменять их, если нужно начать отрисовку
       // чего-либо с другой обводкой.
       // Высота зигзага
-      var h = 7;
+      var h = 8;
       // Ширина зигзага
-      var d = 10;
+      var d = 12;
       // Толщина линии.
       this._ctx.lineWidth = 2;
       // Цвет обводки.
@@ -109,24 +109,25 @@
       // Координаты задаются от центра холста.
       this._ctx.drawImage(this._image, displX, displY);
 
-      //Задание четырёх точек
+      //Задание четырёх угловых точек рамки кадра
       var cornerDotX = [];
       var cornerDotY = [];
+
       //Левая верхняя
-      cornerDotX[0] = Math.round(-this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2);
-      cornerDotY[0] = Math.round(-this._resizeConstraint.side / 2 + h - this._ctx.lineWidth / 2);
+      cornerDotX[0] = this.cornerX(-1, 2);
+      cornerDotY[0] = this.cornerY(-1, 2, h);
 
       //Правая верхняя
-      cornerDotX[1] = Math.round(this._resizeConstraint.side / 2 - this._ctx.lineWidth);
-      cornerDotY[1] = Math.round(-this._resizeConstraint.side / 2 + h - this._ctx.lineWidth / 2);
+      cornerDotX[1] = this.cornerX(1, 1);
+      cornerDotY[1] = this.cornerY(-1, 2, h);
 
       //Левая нижняя
-      cornerDotX[2] = Math.round(-this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2);
-      cornerDotY[2] = Math.ceil(this._resizeConstraint.side / 2 - h - 2 * this._ctx.lineWidth);
+      cornerDotX[2] = this.cornerX(-1, 2);
+      cornerDotY[2] = this.cornerY(1, 1, h);
 
       //Правая нижняя
-      cornerDotX[3] = Math.round(this._resizeConstraint.side / 2 - this._ctx.lineWidth);
-      cornerDotY[3] = Math.ceil(this._resizeConstraint.side / 2 - h - 2 * this._ctx.lineWidth);
+      cornerDotX[3] = this.cornerX(1, 1);
+      cornerDotY[3] = this.cornerY(1, 1, h);
 
       var widthKadr = Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2);
       var heightKadr = Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2) - 2 * h;
@@ -151,6 +152,7 @@
       d4 = Math.round((cornerDotX[3] - (cornerDotX[2] + s1 + d)) / 4);
       this.zigzag(cornerDotX[2] + s1 + d, cornerDotY[2], cornerDotX[2] + s1 + d + d4, cornerDotY[2] + h, cornerDotX[2] + s1 + d + 2 * d4, cornerDotY[2]);
       this.zigzag(cornerDotX[2] + s1 + d + 2 * d4, cornerDotY[2], cornerDotX[2] + s1 + d + 3 * d4, cornerDotY[2] + h, cornerDotX[3], cornerDotY[3]);
+
       //Отрисовка левой и правой вертикальных границ.
       s = 0;
       while (s <= heightKadr - 3 * d) {
@@ -216,6 +218,19 @@
       // сложные рассчеты для координат прямоугольника, который нужно очистить.
       this._ctx.restore();
     },
+
+    //Задание координаты по х для угловых точек
+    cornerX: function(k, l) {
+      var cornerx = Math.round(k * this._resizeConstraint.side / 2 - this._ctx.lineWidth / l);
+      return cornerx;
+    },
+
+    //Задание координаты по y для угловых точек
+    cornerY: function(k, l, h) {
+      var cornery = Math.round(k * this._resizeConstraint.side / 2 - k * h - this._ctx.lineWidth / l);
+      return cornery;
+    },
+
 
     zigzag: function(x1, y1, x2, y2, x3, y3) {
       this._ctx.beginPath();
