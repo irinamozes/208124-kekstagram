@@ -119,15 +119,15 @@
 
       //Правая верхняя
       cX[1] = this.cornerX(1, 1);
-      cY[1] = this.cornerY(-1, 2, h);
+      cY[1] = cY[0];
 
       //Левая нижняя
-      cX[2] = this.cornerX(-1, 2);
+      cX[2] = cX[0];
       cY[2] = this.cornerY(1, 1, h);
 
       //Правая нижняя
-      cX[3] = this.cornerX(1, 1);
-      cY[3] = this.cornerY(1, 1, h);
+      cX[3] = cX[1];
+      cY[3] = cY[2];
 
       var widthKadr = Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2);
       var heightKadr = Math.round(this._resizeConstraint.side - this._ctx.lineWidth / 2) - 2 * h;
