@@ -278,7 +278,8 @@
       filterMap = {
         'none': 'filter-none',
         'chrome': 'filter-chrome',
-        'sepia': 'filter-sepia'
+        'sepia': 'filter-sepia',
+        'marvin': 'filter-marvin'
       };
     }
 
