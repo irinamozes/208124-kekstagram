@@ -76,7 +76,7 @@
 
   leftPos.value = 0;
   rightPos.value = 0;
-  size.value = 0;
+  size.value = 50;
 
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
@@ -86,7 +86,7 @@
     fieldInput.addEventListener('input', resizeFormIsValid);
     var imageW = currentResizer._image.naturalWidth;
     var imageH = currentResizer._image.naturalHeight;
-    if (parseInt(leftPos.value, 10) < 0 || parseInt(rightPos.value, 10) < 0 || parseInt(leftPos.value, 10) + parseInt(size.value, 10) > imageW || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > imageH || size.value <= 0) {
+    if (parseInt(leftPos.value, 10) < 0 || parseInt(rightPos.value, 10) < 0 || parseInt(leftPos.value, 10) + parseInt(size.value, 10) > imageW || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > imageH || size.value < 50) {
       butFwd.setAttribute('disabled', 'disabled');
       return false;
     }
@@ -223,6 +223,15 @@
     evt.preventDefault();
 
     if (resizeFormIsValid()) {
+      var image = currentResizer.exportImage().src;
+
+      var thumbnails = filterForm.querySelectorAll('.upload-filter-preview');
+      for (var i = 0; i < thumbnails.length; i++) {
+        thumbnails[i].style.backgroundImage = 'url(' + image + ')';
+      }
+
+      filterImage.src = image;
+
       fieldInput.removeEventListener('input', resizeFormIsValid);
       filterImage.src = currentResizer.exportImage().src;
       resizeForm.classList.add('invisible');
