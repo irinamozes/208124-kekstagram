@@ -67,13 +67,34 @@
     backgroundElement.style.backgroundImage = 'url(' + images[randomImageNumber] + ')';
   }
 
+  var butFwd = document.querySelector('.upload-form-controls-fwd');
+  var fieldInput = document.querySelector('.upload-resize-controls');
+
+  var leftPos = document.getElementById('resize-x');
+  var rightPos = document.getElementById('resize-y');
+  var size = document.getElementById('resize-size');
+
+  leftPos.value = 0;
+  rightPos.value = 0;
+  size.value = 50;
+
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
    */
   function resizeFormIsValid() {
+    fieldInput.addEventListener('input', resizeFormIsValid);
+    var imageW = currentResizer._image.naturalWidth;
+    var imageH = currentResizer._image.naturalHeight;
+    if (parseInt(leftPos.value, 10) < 0 || parseInt(rightPos.value, 10) < 0 || parseInt(leftPos.value, 10) + parseInt(size.value, 10) > imageW || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > imageH || size.value < 50) {
+      butFwd.setAttribute('disabled', 'disabled');
+      return false;
+    }
+
+    butFwd.removeAttribute('disabled');
     return true;
   }
+
 
   /**
    * Форма загрузки изображения.
@@ -154,21 +175,28 @@
 
           currentResizer = new Resizer(fileReader.result);
           currentResizer.setElement(resizeForm);
+
           uploadMessage.classList.add('invisible');
 
           uploadForm.classList.add('invisible');
+
           resizeForm.classList.remove('invisible');
 
           hideMessage();
-        };
 
+          resizeFormIsValid();
+
+        };
         fileReader.readAsDataURL(element.files[0]);
+
       } else {
-        // Показ сообщения об ошибке, если формат загружаемого файла не поддерживается
+        // Показ сообщения об ошибке, если загружаемый файл, не является
+        // поддерживаемым изображением.
         showMessage(Action.ERROR);
       }
     }
   };
+
 
   /**
    * Обработка сброса формы кадрирования. Возвращает в начальное состояние
@@ -182,6 +210,7 @@
     updateBackground();
 
     resizeForm.classList.add('invisible');
+    fieldInput.removeEventListener('input', resizeFormIsValid);
     uploadForm.classList.remove('invisible');
   };
 
@@ -203,6 +232,8 @@
 
       filterImage.src = image;
 
+      fieldInput.removeEventListener('input', resizeFormIsValid);
+      filterImage.src = currentResizer.exportImage().src;
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
     }
@@ -217,6 +248,7 @@
 
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
+    fieldInput.addEventListener('input', resizeFormIsValid);
   };
 
   /**
