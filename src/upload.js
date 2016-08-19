@@ -41,6 +41,22 @@
    */
   var currentResizer;
 
+  var selectedFilter;
+
+  var browserCookies = require('browser-cookies');
+  var uploadFilter;
+
+  //  Вычисление даты ближайшего дня рождения Grace Hopper
+  var _expiresDate = function() {
+    var today = new Date();
+    var hopperBirthday = new Date(today.getFullYear() + '-12' + '-09');
+    if ((hopperBirthday.valueOf()) >= Date.now()) {
+      hopperBirthday = new Date((today.getFullYear() - 1) + '-12' + '-09');
+    }
+    var expiresDate = ((Date.now() - hopperBirthday.valueOf())) / 1000 / 60 / 60 / 24;  // Срок жизни cookie
+    return (expiresDate);
+  };
+
   /**
    * Удаляет текущий объект {@link Resizer}, чтобы создать новый с другим
    * изображением.
@@ -83,7 +99,6 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    fieldInput.addEventListener('input', resizeFormIsValid);
     var imageW = currentResizer._image.naturalWidth;
     var imageH = currentResizer._image.naturalHeight;
     if (parseInt(leftPos.value, 10) < 0 || parseInt(rightPos.value, 10) < 0 || parseInt(leftPos.value, 10) + parseInt(size.value, 10) > imageW || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > imageH || size.value < 50) {
@@ -184,6 +199,7 @@
 
           hideMessage();
 
+          fieldInput.addEventListener('input', resizeFormIsValid);
           resizeFormIsValid();
 
         };
@@ -235,6 +251,10 @@
       fieldInput.removeEventListener('input', resizeFormIsValid);
       filterImage.src = currentResizer.exportImage().src;
       resizeForm.classList.add('invisible');
+
+      uploadFilter = browserCookies.get('upload-filter') || 'none';
+      document.getElementById('upload-filter-' + uploadFilter).setAttribute('checked', 'checked');
+
       filterForm.classList.remove('invisible');
     }
   };
@@ -245,6 +265,8 @@
    */
   filterForm.onreset = function(evt) {
     evt.preventDefault();
+
+    browserCookies.set('upload-filter', selectedFilter, {expires: _expiresDate() });
 
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
@@ -261,6 +283,8 @@
 
     cleanupResizer();
     updateBackground();
+
+    browserCookies.set('upload-filter', selectedFilter, {expires: _expiresDate() });
 
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
@@ -283,9 +307,10 @@
       };
     }
 
-    var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
+    selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
       return item.checked;
     })[0].value;
+
 
     // Класс перезаписывается, а не обновляется через classList потому что нужно
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
