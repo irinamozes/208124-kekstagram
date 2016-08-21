@@ -182,7 +182,6 @@
       // одного из форматов: JPEG, PNG, GIF или SVG.
       if (fileRegExp.test(element.files[0].type)) {
         var fileReader = new FileReader();
-
         showMessage(Action.UPLOADING);
 
         fileReader.onload = function() {
@@ -254,6 +253,7 @@
 
       uploadFilter = browserCookies.get('upload-filter') || 'none';
       document.getElementById('upload-filter-' + uploadFilter).setAttribute('checked', 'checked');
+      filterImage.className = 'filter-image-preview ' + 'filter-' + uploadFilter;
 
       filterForm.classList.remove('invisible');
     }
@@ -310,7 +310,6 @@
     selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
       return item.checked;
     })[0].value;
-
 
     // Класс перезаписывается, а не обновляется через classList потому что нужно
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
