@@ -105,14 +105,16 @@
   function resizeFormIsValid() {
     var imageW = currentResizer._image.naturalWidth;
     var imageH = currentResizer._image.naturalHeight;
-
+    console.log(currentResizer._image.naturalWidth);
+    console.log(currentResizer._image.naturalHeight);
     if (parseInt(leftPos.value, 10) + parseInt(size.value, 10) > imageW || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > imageH) {
 
       butFwd.disabled = true;
+      console.log(1);
       return false;
     }
     butFwd.disabled = false;
-
+    console.log(2);
     return true;
   }
 
@@ -182,6 +184,7 @@
    * @param {Event} evt
    */
   uploadForm.onchange = function(evt) {
+    fieldInput.addEventListener('input', resizeFormIsValid);
     var element = evt.target;
     if (element.id === 'upload-file') {
       // Проверка типа загружаемого файла, тип должен быть изображением
@@ -200,17 +203,19 @@
 
           uploadForm.classList.add('invisible');
 
+          butFwd.disabled = false;
           resizeForm.classList.remove('invisible');
 
-          hideMessage();
-
-          fieldInput.addEventListener('input', resizeFormIsValid);
           resizeFormIsValid();
+
+          hideMessage();
 
         };
         fileReader.readAsDataURL(element.files[0]);
 
+
       } else {
+        fieldInput.removeEventListener('input', resizeFormIsValid);
         // Показ сообщения об ошибке, если загружаемый файл, не является
         // поддерживаемым изображением.
         showMessage(Action.ERROR);
@@ -272,7 +277,7 @@
   filterForm.onreset = function(evt) {
     evt.preventDefault();
 
-    browserCookies.set('upload-filter', selectedFilter, {expires: _expiresDate() });
+    //browserCookies.set('upload-filter', selectedFilter, {expires: _expiresDate() });
 
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
@@ -289,9 +294,6 @@
 
     cleanupResizer();
     updateBackground();
-
-    browserCookies.set('upload-filter', selectedFilter, {expires: _expiresDate() });
-
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
   };
@@ -321,6 +323,7 @@
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
+    browserCookies.set('upload-filter', selectedFilter, {expires: _expiresDate() });
   };
 
   cleanupResizer();
