@@ -105,19 +105,14 @@
   function resizeFormIsValid() {
     var imageW = currentResizer._image.naturalWidth;
     var imageH = currentResizer._image.naturalHeight;
-    console.log(currentResizer._image.naturalWidth);
-    console.log(currentResizer._image.naturalHeight);
-    if (parseInt(leftPos.value, 10) + parseInt(size.value, 10) > imageW || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > imageH) {
 
+    if (parseInt(leftPos.value, 10) + parseInt(size.value, 10) > imageW || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > imageH) {
       butFwd.disabled = true;
-      console.log(1);
       return false;
     }
     butFwd.disabled = false;
-    console.log(2);
     return true;
   }
-
 
   /**
    * Форма загрузки изображения.
@@ -194,7 +189,6 @@
         showMessage(Action.UPLOADING);
 
         fileReader.onload = function() {
-          cleanupResizer();
 
           currentResizer = new Resizer(fileReader.result);
           currentResizer.setElement(resizeForm);
@@ -203,12 +197,10 @@
 
           uploadForm.classList.add('invisible');
 
-          butFwd.disabled = false;
           resizeForm.classList.remove('invisible');
 
-          resizeFormIsValid();
-
           hideMessage();
+          resizeFormIsValid();
 
         };
         fileReader.readAsDataURL(element.files[0]);
@@ -222,7 +214,6 @@
       }
     }
   };
-
 
   /**
    * Обработка сброса формы кадрирования. Возвращает в начальное состояние
@@ -276,8 +267,6 @@
    */
   filterForm.onreset = function(evt) {
     evt.preventDefault();
-
-    //browserCookies.set('upload-filter', selectedFilter, {expires: _expiresDate() });
 
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
