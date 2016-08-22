@@ -94,6 +94,10 @@
   rightPos.value = 0;
   size.value = 50;
 
+  leftPos.min = 0;
+  rightPos.min = 0;
+  size.min = 50;
+
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
@@ -101,12 +105,14 @@
   function resizeFormIsValid() {
     var imageW = currentResizer._image.naturalWidth;
     var imageH = currentResizer._image.naturalHeight;
-    if (parseInt(leftPos.value, 10) < 0 || parseInt(rightPos.value, 10) < 0 || parseInt(leftPos.value, 10) + parseInt(size.value, 10) > imageW || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > imageH || size.value < 50) {
-      butFwd.setAttribute('disabled', 'disabled');
+
+    if (parseInt(leftPos.value, 10) + parseInt(size.value, 10) > imageW || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > imageH) {
+
+      butFwd.disabled = true;
       return false;
     }
+    butFwd.disabled = false;
 
-    butFwd.removeAttribute('disabled');
     return true;
   }
 
