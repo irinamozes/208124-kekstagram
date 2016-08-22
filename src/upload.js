@@ -41,6 +41,22 @@
    */
   var currentResizer;
 
+  var selectedFilter;
+
+  var browserCookies = require('browser-cookies');
+  var uploadFilter;
+
+  //  Вычисление даты ближайшего дня рождения Grace Hopper
+  var _expiresDate = function() {
+    var today = new Date();
+    var hopperBirthday = new Date(today.getFullYear() + '-12' + '-09');
+    if ((hopperBirthday.valueOf()) >= Date.now()) {
+      hopperBirthday = new Date((today.getFullYear() - 1) + '-12' + '-09');
+    }
+    var expiresDate = ((Date.now() - hopperBirthday.valueOf())) / 1000 / 60 / 60 / 24;  // Срок жизни cookie
+    return (expiresDate);
+  };
+
   /**
    * Удаляет текущий объект {@link Resizer}, чтобы создать новый с другим
    * изображением.
@@ -78,23 +94,25 @@
   rightPos.value = 0;
   size.value = 50;
 
+  leftPos.min = 0;
+  rightPos.min = 0;
+  size.min = 50;
+
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    fieldInput.addEventListener('input', resizeFormIsValid);
     var imageW = currentResizer._image.naturalWidth;
     var imageH = currentResizer._image.naturalHeight;
-    if (parseInt(leftPos.value, 10) < 0 || parseInt(rightPos.value, 10) < 0 || parseInt(leftPos.value, 10) + parseInt(size.value, 10) > imageW || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > imageH || size.value < 50) {
-      butFwd.setAttribute('disabled', 'disabled');
+
+    if (parseInt(leftPos.value, 10) + parseInt(size.value, 10) > imageW || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > imageH) {
+      butFwd.disabled = true;
       return false;
     }
-
-    butFwd.removeAttribute('disabled');
+    butFwd.disabled = false;
     return true;
   }
-
 
   /**
    * Форма загрузки изображения.
@@ -161,17 +179,16 @@
    * @param {Event} evt
    */
   uploadForm.onchange = function(evt) {
+    fieldInput.addEventListener('input', resizeFormIsValid);
     var element = evt.target;
     if (element.id === 'upload-file') {
       // Проверка типа загружаемого файла, тип должен быть изображением
       // одного из форматов: JPEG, PNG, GIF или SVG.
       if (fileRegExp.test(element.files[0].type)) {
         var fileReader = new FileReader();
-
         showMessage(Action.UPLOADING);
 
         fileReader.onload = function() {
-          cleanupResizer();
 
           currentResizer = new Resizer(fileReader.result);
           currentResizer.setElement(resizeForm);
@@ -183,20 +200,20 @@
           resizeForm.classList.remove('invisible');
 
           hideMessage();
-
           resizeFormIsValid();
 
         };
         fileReader.readAsDataURL(element.files[0]);
 
+
       } else {
+        fieldInput.removeEventListener('input', resizeFormIsValid);
         // Показ сообщения об ошибке, если загружаемый файл, не является
         // поддерживаемым изображением.
         showMessage(Action.ERROR);
       }
     }
   };
-
 
   /**
    * Обработка сброса формы кадрирования. Возвращает в начальное состояние
@@ -235,6 +252,11 @@
       fieldInput.removeEventListener('input', resizeFormIsValid);
       filterImage.src = currentResizer.exportImage().src;
       resizeForm.classList.add('invisible');
+
+      uploadFilter = browserCookies.get('upload-filter') || 'none';
+      document.getElementById('upload-filter-' + uploadFilter).setAttribute('checked', 'checked');
+      filterImage.className = 'filter-image-preview ' + 'filter-' + uploadFilter;
+
       filterForm.classList.remove('invisible');
     }
   };
@@ -261,7 +283,6 @@
 
     cleanupResizer();
     updateBackground();
-
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
   };
@@ -283,7 +304,7 @@
       };
     }
 
-    var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
+    selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
       return item.checked;
     })[0].value;
 
@@ -291,6 +312,7 @@
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
+    browserCookies.set('upload-filter', selectedFilter, {expires: _expiresDate() });
   };
 
   cleanupResizer();
