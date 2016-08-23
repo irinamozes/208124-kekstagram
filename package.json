@@ -30,7 +30,7 @@
      "browser-cookies": "1.0.3"
   },
   "scripts": {
-    "build": "webpack —config ./bin/webpack.config.js",
+    "build": "webpack --config ./bin/webpack.config.js",
     "start": "node ./bin/server.js",
     "test": "eslint src",
     "unittest": "node tests/lib/index.js"
