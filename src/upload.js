@@ -8,6 +8,9 @@
 'use strict';
 
 (function() {
+
+  var IMAGE_LOAD_TIMEOUT = 100;
+
   /** @enum {string} */
   var FileType = {
     'GIF': '',
@@ -188,6 +191,8 @@
         var fileReader = new FileReader();
         showMessage(Action.UPLOADING);
 
+        var _timeout;
+
         fileReader.onload = function() {
 
           currentResizer = new Resizer(fileReader.result);
@@ -200,11 +205,18 @@
           resizeForm.classList.remove('invisible');
 
           hideMessage();
-          resizeFormIsValid();
+
+          _timeout = setTimeout(function() {
+            resizeFormIsValid();
+          }, IMAGE_LOAD_TIMEOUT);
+
+          if(currentResizer._image.naturalWidth !== 0 && currentResizer._image.naturalHeight !== 0) {
+            clearTimeout(_timeout);
+            resizeFormIsValid();
+          }
 
         };
         fileReader.readAsDataURL(element.files[0]);
-
 
       } else {
         fieldInput.removeEventListener('input', resizeFormIsValid);
