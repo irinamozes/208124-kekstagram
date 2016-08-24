@@ -20,7 +20,7 @@ var loadAndCreate = function(addres, callback2) {
 function somethingDoWithPicturesCallback2(arr) {
   var urlphotos = [];
   for (var i = 0; i < arr.length; i++) {
-    urlphotos[i] = window.pictures[i].url;
+    urlphotos[i] = arr[i].url;
   }
 }
 
