@@ -1,11 +1,12 @@
 'use strict';
-
-module.exports = function(addres, callback2) {
+var pictures = null;
+module.exports = function(addres, callback2, callback3) {
   var scriptOld = document.body.getElementsByTagName('script');
 
   window.__jsonpCallback = function(data) {
-    window.pictures = data;
-    callback2(window.pictures);
+    pictures = data;
+    callback2(pictures);
+    callback3(pictures);
   };
 
   var scriptEl = document.createElement('script');
