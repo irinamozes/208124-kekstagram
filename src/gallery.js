@@ -77,16 +77,17 @@ Gallery.prototype.setActivePicture = function(srcList) {
 
   var __src = _src.substring(22); //предыдущее
   activePicture = __src.substring(7, 9);
-  console.log(activePicture.substring(1, 2));
+
   if (activePicture.substring(1, 2) === '.') {
     activePicture = __src.substring(7, 8);
   }
+
   activePicture = parseInt(activePicture, 10);
-  console.log(activePicture);
+
   if (activePicture < srcList.length) {
-    console.log(srcList.length);
 
     var activePictureNext = activePicture + 1;
+
   } else {
     activePictureNext = 1;
   }
@@ -94,7 +95,6 @@ Gallery.prototype.setActivePicture = function(srcList) {
   _src = addr + 'photos/' + String(activePictureNext) + '.jpg';
 
   imageGallery.src = _src;
-  console.log(imageGallery.src);
 
 };
 
