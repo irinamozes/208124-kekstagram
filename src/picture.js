@@ -40,7 +40,6 @@ module.exports = function(data, container) {
 
   _pictureTimeout = setTimeout(function() {
 
-    container.appendChild(element);
     _picture.src = '';
     element.classList.add('picture-load-failure');
   }, IMAGE_LOAD_TIMEOUT);
