@@ -1,5 +1,6 @@
 'use strict';
 var _src;
+var activePicture;
 var like = 0;
 var comments = 0;
 var fhotoGallery = document.querySelector('.gallery-overlay');
@@ -50,7 +51,6 @@ Gallery.prototype.pictureClick = function(evt) {
     return;
   } else {
     _src = target.src;
-
     Gallery.prototype.show(_src);
   }
 };
@@ -69,18 +69,33 @@ Gallery.prototype.hideCount = function() {
 };
 
 Gallery.prototype.setActivePicture = function(srcList) {
+
   Gallery.prototype.hideCount();
-  var addr = 'http://localhost:1506/photos/';
-
-  var __src = _src.substring(22);
-  var activePicture = srcList.indexOf(__src);
-
-  if (activePicture > srcList.length - 2) {
-    activePicture = -1;
-  }
   imageGallery.src = '';
-  imageGallery.src = addr + String(activePicture + 2) + '.jpg';
-  _src = imageGallery.src;
+
+  var addr = 'http://localhost:1506/';
+
+  var __src = _src.substring(22); //предыдущее
+  activePicture = __src.substring(7, 9);
+  console.log(activePicture.substring(1, 2));
+  if (activePicture.substring(1, 2) === '.') {
+    activePicture = __src.substring(7, 8);
+  }
+  activePicture = parseInt(activePicture, 10);
+  console.log(activePicture);
+  if (activePicture < srcList.length) {
+    console.log(srcList.length);
+
+    var activePictureNext = activePicture + 1;
+  } else {
+    activePictureNext = 1;
+  }
+
+  _src = addr + 'photos/' + String(activePictureNext) + '.jpg';
+
+  imageGallery.src = _src;
+  console.log(imageGallery.src);
+
 };
 
 Gallery.prototype.likesCountImage = function() {

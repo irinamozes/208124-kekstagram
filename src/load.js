@@ -5,6 +5,7 @@ module.exports = function(addres, callback2, callback3) {
 
   window.__jsonpCallback = function(data) {
     pictures = data;
+    pictures[25].url = 'photos/26.jpg';
     callback2(pictures);
     callback3(pictures);
   };
