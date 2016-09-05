@@ -21,7 +21,6 @@ var renderPicturesCallback2 = function(arr) {
 
 var startGalleryCallback3 = function(arr) {
   var gallery = new Gallery(arr);
-
   picturesContainer.addEventListener('click', gallery.pictureClick);
 
 };

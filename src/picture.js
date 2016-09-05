@@ -1,6 +1,5 @@
 
 'use strict';
-
 var elementToClone;
 
 var templateElement = document.querySelector('template');

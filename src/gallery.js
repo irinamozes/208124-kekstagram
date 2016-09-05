@@ -1,6 +1,6 @@
 'use strict';
 var _src;
-var activePicture;
+var renderedPicture = [];
 var like = 0;
 var comments = 0;
 var fhotoGallery = document.querySelector('.gallery-overlay');
@@ -37,8 +37,10 @@ Gallery.prototype.setPictures = function(data) {
   for ( var i = 0; i <= data.length - 1; i++) {
     srcList[i] = data[i].url;
   }
+
   return srcList;
 };
+
 
 Gallery.prototype.show = function(__src) {
   fhotoGallery.classList.remove('invisible');
@@ -68,34 +70,36 @@ Gallery.prototype.hideCount = function() {
   commentsCount.textContent = comments;
 };
 
-Gallery.prototype.setActivePicture = function(srcList) {
+Gallery.prototype.setActivePicture = function() {
 
   Gallery.prototype.hideCount();
+
   imageGallery.src = '';
 
   var addr = 'http://localhost:1506/';
 
-  var __src = _src.substring(22); //предыдущее
-  activePicture = __src.substring(7, 9);
 
-  if (activePicture.substring(1, 2) === '.') {
-    activePicture = __src.substring(7, 8);
+  var notFailureList = Array.prototype.slice.call(document.querySelectorAll('.picture'));
+
+  notFailureList.forEach(function(image, k) {
+    renderedPicture[k] = image.querySelector('img').src;
+  });
+
+  var i;
+
+  var __src = _src; //предыдущее
+  i = renderedPicture.indexOf(__src);
+  i = i + 1;
+
+  if (renderedPicture[i] === addr) {
+    i = i + 1;
   }
-
-  activePicture = parseInt(activePicture, 10);
-
-  if (activePicture < srcList.length) {
-
-    var activePictureNext = activePicture + 1;
-
-  } else {
-    activePictureNext = 1;
+  if (i > renderedPicture.length - 1) {
+    i = 0;
   }
-
-  _src = addr + 'photos/' + String(activePictureNext) + '.jpg';
+  _src = renderedPicture[i];
 
   imageGallery.src = _src;
-
 };
 
 Gallery.prototype.likesCountImage = function() {
