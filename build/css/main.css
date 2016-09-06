@@ -554,12 +554,14 @@ input[type=radio]:checked + .upload-filter-label .upload-filter-preview {
   background: #ffffff;
 }
 
-.gallery-overlay-image[src=""] {
+/*.gallery-overlay-image[src=""] {*/
+.gallery-overlay-image {
   display: block;
   width: 640px;
   height: 640px;
 
-  border: dotted 1px #dddddd;
+/*  border: dotted 1px #dddddd;*/
+  border: dotted 5px  #DB7093;
   cursor: pointer;
 }
 
@@ -580,6 +582,7 @@ input[type=radio]:checked + .upload-filter-label .upload-filter-preview {
   margin-right: 150px;
 
   text-align: left;
+  cursor: pointer;
 }
 
 .gallery-overlay-controls-like {

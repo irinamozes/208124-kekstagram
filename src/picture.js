@@ -1,5 +1,5 @@
-'use strict';
 
+'use strict';
 var elementToClone;
 
 var templateElement = document.querySelector('template');
@@ -25,15 +25,20 @@ module.exports = function(data, container) {
   var _pictureTimeout;
   _picture.onload = function(evt) {
     clearTimeout(_pictureTimeout);
+
     element.querySelector('img').src = evt.target.src;
+
     _picture.width = '182';
     _picture.height = '182';
   };
   _picture.onerror = function() {
     element.classList.add('picture-load-failure');
   };
-  _picture.src = data.url;
+
+  _picture.src = 'http://localhost:1506/' + data.url;
+
   _pictureTimeout = setTimeout(function() {
+
     _picture.src = '';
     element.classList.add('picture-load-failure');
   }, IMAGE_LOAD_TIMEOUT);
