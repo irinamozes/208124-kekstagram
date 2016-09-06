@@ -81,9 +81,14 @@ Gallery.prototype.setActivePicture = function() {
 
   var notFailureList = Array.prototype.slice.call(document.querySelectorAll('.picture'));
 
-  notFailureList.forEach(function(image, k) {
-    renderedPicture[k] = image.querySelector('img').src;
-  });
+  var k = 0;
+  for (var l = 0; l < notFailureList.length; l++) {
+    if (notFailureList[l].querySelector('img').src !== addr) {
+      renderedPicture[k] = notFailureList[l].querySelector('img').src;
+      k = k + 1;
+    }
+
+  }
 
   var i;
 
@@ -91,9 +96,6 @@ Gallery.prototype.setActivePicture = function() {
   i = renderedPicture.indexOf(__src);
   i = i + 1;
 
-  if (renderedPicture[i] === addr) {
-    i = i + 1;
-  }
   if (i > renderedPicture.length - 1) {
     i = 0;
   }
