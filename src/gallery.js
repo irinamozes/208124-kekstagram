@@ -8,9 +8,8 @@ var imageGallery = document.querySelector('.gallery-overlay-image');
 var likesCount = document.querySelector('.likes-count');
 var commentsCount = document.querySelector('.comments-count');
 
-var Gallery = function(data) {
+var Gallery = function() {
   var self = this;
-  this.urlPictures = this.setPictures(data);
   this.closeGallery = document.querySelector('.gallery-overlay-close');
   this.closeGallery.onclick = function() {
     self.hide();
@@ -32,29 +31,11 @@ var Gallery = function(data) {
 
 };
 
-Gallery.prototype.setPictures = function(data) {
-  var srcList = [];
-  for ( var i = 0; i <= data.length - 1; i++) {
-    srcList[i] = data[i].url;
-  }
 
-  return srcList;
-};
-
-
-Gallery.prototype.show = function(__src) {
+Gallery.prototype.show = function(__src__) {
   fhotoGallery.classList.remove('invisible');
-  imageGallery.src = __src;
-};
-
-Gallery.prototype.pictureClick = function(evt) {
-  var target = evt.target;
-  if (target.tagName !== 'IMG') {
-    return;
-  } else {
-    _src = target.src;
-    Gallery.prototype.show(_src);
-  }
+  imageGallery.src = __src__;
+  return __src__;
 };
 
 
@@ -87,21 +68,20 @@ Gallery.prototype.setActivePicture = function() {
       renderedPicture[k] = notFailureList[l].querySelector('img').src;
       k = k + 1;
     }
-
   }
-
-  var i;
+  var n = 0;
 
   var __src = _src; //предыдущее
-  i = renderedPicture.indexOf(__src);
-  i = i + 1;
 
-  if (i > renderedPicture.length - 1) {
-    i = 0;
+  n = renderedPicture.indexOf(__src);
+  n = n + 1;
+  if (n > renderedPicture.length - 1) {
+    n = 0;
   }
-  _src = renderedPicture[i];
+  _src = renderedPicture[n];
 
   imageGallery.src = _src;
+
 };
 
 Gallery.prototype.likesCountImage = function() {

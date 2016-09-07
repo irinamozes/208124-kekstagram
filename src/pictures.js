@@ -8,21 +8,13 @@ filtersBloc.classList.add('hidden');
 
 var loadAndCreate = require('./load');
 
-var getPictureElement = require('./picture');
-
-var Gallery = require('./gallery');
+var Picture = require('./picture');
 
 var renderPicturesCallback2 = function(arr) {
   arr.forEach(function(picture) {
-    getPictureElement(picture, picturesContainer);
+    picturesContainer.appendChild(new Picture(picture).element);
   });
 
 };
 
-var startGalleryCallback3 = function(arr) {
-  var gallery = new Gallery(arr);
-  picturesContainer.addEventListener('click', gallery.pictureClick);
-
-};
-
-loadAndCreate(addr, renderPicturesCallback2, startGalleryCallback3);
+loadAndCreate(addr, renderPicturesCallback2);
