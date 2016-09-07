@@ -1,5 +1,7 @@
 
 'use strict';
+var Gallery = require('./gallery');
+var gallery = new Gallery();
 
 var elementToClone;
 
@@ -19,18 +21,9 @@ var IMAGE_LOAD_TIMEOUT = 10000;
  * @param {HTMLElement} container
  * @return {HTMLElement}
  */
-
-
-var Picture = function(data, container) {
-  //var self = this;
-  this.data = data;
-  this.element = this.getPictureElement(this.data, container);
-
-};
-
-Picture.prototype.getPictureElement = function(dat, cont) {
+var getPictureElement = function(data) {
   var element = elementToClone.cloneNode(true);
-  cont.appendChild(element);
+  //container.appendChild(element);
   var _picture = new Image();
   var _pictureTimeout;
   _picture.onload = function(evt) {
@@ -45,7 +38,7 @@ Picture.prototype.getPictureElement = function(dat, cont) {
     element.classList.add('picture-load-failure');
   };
 
-  _picture.src = 'http://localhost:1506/' + dat.url;
+  _picture.src = 'http://localhost:1506/' + data.url;
 
   _pictureTimeout = setTimeout(function() {
 
@@ -55,28 +48,31 @@ Picture.prototype.getPictureElement = function(dat, cont) {
   return element;
 };
 
-  //var quizYes = this.element.querySelector('.review-quiz-answer-yes');
-  //var quizNo = this.element.querySelector('.review-quiz-answer-no');
+var Picture = function(data) {
+  this.data = data;
+  this.element = getPictureElement(data);
 
-  //this.clickYes = function() {
-    //quizNo.classList.remove('review-quiz-answer-active');
-    //quizYes.classList.add('review-quiz-answer-active');
-  //};
-  //this.clickNo = function() {
-    //quizYes.classList.remove('review-quiz-answer-active');
-    //quizNo.classList.add('review-quiz-answer-active');
-  //};
+  this.pictureClick = this.pictureClick.bind(this);
 
-  //this.remove = function() {
-    //quizYes.removeEventListener('click', this.clickYes);
-    //quizNo.removeEventListener('click', this.clickNo);
-    //this.element.parentNode.removeChild(this.element);
-  //};
+  this.element.addEventListener('click', this.pictureClick);
 
-  //quizYes.addEventListener('click', this.clickYes);
-  //quizNo.addEventListener('click', this.clickNo);
-  //container.appendChild(this.element);
+};
 
+
+Picture.prototype.pictureClick = function(evt) {
+  var target = evt.target;
+  if (target.tagName !== 'IMG') {
+    return;
+  } else {
+    var _src = target.src;
+    gallery.show(_src);
+  }
+};
+
+
+Picture.prototype.remove = function() {
+  this.element.removeEventListener('click', this.onBackgroundClick);
+};
 
 
 module.exports = Picture;
