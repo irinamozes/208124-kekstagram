@@ -1,5 +1,5 @@
 'use strict';
-var _src;
+//var _src;
 var renderedPicture = [];
 var like = 0;
 var comments = 0;
@@ -71,16 +71,16 @@ Gallery.prototype.setActivePicture = function() {
   }
   var n = 0;
 
-  var __src = _src; //предыдущее
+  var __src = window._src; //предыдущее
 
   n = renderedPicture.indexOf(__src);
   n = n + 1;
   if (n > renderedPicture.length - 1) {
     n = 0;
   }
-  _src = renderedPicture[n];
+  window._src = renderedPicture[n];
 
-  imageGallery.src = _src;
+  imageGallery.src = window._src;
 
 };
 

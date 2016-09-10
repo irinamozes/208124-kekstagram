@@ -50,7 +50,7 @@
   var uploadFilter;
 
   //  Вычисление даты ближайшего дня рождения Grace Hopper
-  var _expiresDate = require('./utils');
+  var utils = require('./utils');
 
   /**
    * Удаляет текущий объект {@link Resizer}, чтобы создать новый с другим
@@ -316,7 +316,7 @@
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
-    browserCookies.set('upload-filter', selectedFilter, {expires: _expiresDate() });
+    browserCookies.set('upload-filter', selectedFilter, {expires: utils.cookiesTime() });
   };
 
   cleanupResizer();
