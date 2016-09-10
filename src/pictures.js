@@ -63,7 +63,7 @@ var scrollHandler = utils.throttle(function() {
 window.addEventListener('scroll', scrollHandler);
 
 filtersBloc.addEventListener('click', function(evt) {
-  if (evt.target.classList.contains('filters')) {
+  if (evt.target.classList.contains('filters-radio')) {
     changeFilter(evt.target.id);
   }
 });
