@@ -1,15 +1,23 @@
 'use strict';
 var pictures = null;
-module.exports = function(addres, callback2) {
-  var scriptOld = document.body.getElementsByTagName('script');
 
-  window.__jsonpCallback = function(data) {
-    pictures = data;
-    pictures[25].url = 'photos/26.jpg';
-    callback2(pictures);
+var getSearchString = function(params) {
+  return Object.keys(params).map(function(param) {
+    return [param, params[param]].join('=');
+  }).join('&');
+};
+
+module.exports = function(addres, params, callback, callback2) {
+  var xhr = new XMLHttpRequest();
+
+  xhr.onload = function(evt) {
+    pictures = JSON.parse(evt.target.response);
+    var lengthPictures = pictures.length;
+    callback(pictures);
+    callback2(lengthPictures);
   };
 
-  var scriptEl = document.createElement('script');
-  scriptEl.src = addres;
-  document.body.insertBefore(scriptEl, scriptOld[0]);
+  xhr.open('GET', addres + '?' + getSearchString(params));
+
+  xhr.send();
 };

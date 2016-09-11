@@ -21,9 +21,9 @@ var IMAGE_LOAD_TIMEOUT = 10000;
  * @param {HTMLElement} container
  * @return {HTMLElement}
  */
+
 var getPictureElement = function(data) {
   var element = elementToClone.cloneNode(true);
-  //container.appendChild(element);
   var _picture = new Image();
   var _pictureTimeout;
   _picture.onload = function(evt) {
@@ -64,14 +64,14 @@ Picture.prototype.pictureClick = function(evt) {
   if (target.tagName !== 'IMG') {
     return;
   } else {
-    var _src = target.src;
-    gallery.show(_src);
+    window._src = target.src;
+    gallery.show(window._src);
   }
 };
 
 
 Picture.prototype.remove = function() {
-  this.element.removeEventListener('click', this.onBackgroundClick);
+  this.element.removeEventListener('click', this.pictureClick);
 };
 
 
