@@ -33,8 +33,8 @@ var renderPicturesCallback = function(arr) {
   });
 };
 
-var renderPicturesCallback2 = function(length) {
-  if (utils.elementIsAtTheBottom(footer) && length !== 0) {
+var renderPicturesCallback2 = function(_length) {
+  if (utils.elementIsAtTheBottom(footer) && _length !== 0) {
     loadPictures(activeFilter, ++pageNumber);
   }
 };

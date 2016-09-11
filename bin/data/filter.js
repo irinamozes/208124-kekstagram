@@ -6,9 +6,18 @@ module.exports = function(list, filterID) {
       return list;
 
     case 'filter-new':
-      return list.sort(function(a, b) {
-        return b.likes - a.likes;
+      var _date;
+      list = list.filter(
+        function(dat) {
+          _date = dat.created;
+          return (_date <= Date.now() && _date > Date.now() - 3 * 24 * 60 * 60 * 1000);
+        });
+
+      list = list.sort(function(a, b) {
+        return (b.created - a.created);
       });
+
+      break;
 
     case 'filter-discussed':
       return list.sort(function(a, b) {
