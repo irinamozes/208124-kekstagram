@@ -98,6 +98,13 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
+    if (currentResizer._resizeConstraint !== null) {
+      currentResizer.getConstraint();
+
+      var side = parseInt(currentResizer._resizeConstraint.side, 10);
+      currentResizer.moveConstraint(parseInt(leftPos.value, 10), parseInt(rightPos.value, 10), parseInt(size.value, 10) - side);
+    }
+
     var imageW = currentResizer._image.naturalWidth;
     var imageH = currentResizer._image.naturalHeight;
 
@@ -199,10 +206,16 @@
           hideMessage();
 
           _timeout = setTimeout(function() {
+            size.value = Math.min(
+              currentResizer._image.naturalWidth * 0.75,
+              currentResizer._image.naturalHeight * 0.75);
             resizeFormIsValid();
           }, IMAGE_LOAD_TIMEOUT);
 
           if(currentResizer._image.naturalWidth !== 0 && currentResizer._image.naturalHeight !== 0) {
+            size.value = Math.min(
+              currentResizer._image.naturalWidth * 0.75,
+              currentResizer._image.naturalHeight * 0.75);
             clearTimeout(_timeout);
             resizeFormIsValid();
           }
@@ -244,6 +257,7 @@
     evt.preventDefault();
 
     if (resizeFormIsValid()) {
+
       var image = currentResizer.exportImage().src;
 
       var thumbnails = filterForm.querySelectorAll('.upload-filter-preview');
