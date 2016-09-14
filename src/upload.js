@@ -1,4 +1,3 @@
-/* global Resizer: true */
 
 /**
  * @fileoverview
@@ -8,6 +7,8 @@
 'use strict';
 
 (function() {
+
+  var Resizer = require('./resizer');
 
   var IMAGE_LOAD_TIMEOUT = 100;
 
@@ -106,6 +107,7 @@
       return false;
     }
     butFwd.disabled = false;
+    currentResizer.setKadr(leftPos.value, rightPos.value, size.value);
     return true;
   }
 
@@ -188,6 +190,7 @@
         fileReader.onload = function() {
 
           currentResizer = new Resizer(fileReader.result);
+
           currentResizer.setElement(resizeForm);
 
           uploadMessage.classList.add('invisible');
@@ -199,10 +202,16 @@
           hideMessage();
 
           _timeout = setTimeout(function() {
+            size.value = Math.min(
+              currentResizer._image.naturalWidth * 0.75,
+              currentResizer._image.naturalHeight * 0.75);
             resizeFormIsValid();
           }, IMAGE_LOAD_TIMEOUT);
 
           if(currentResizer._image.naturalWidth !== 0 && currentResizer._image.naturalHeight !== 0) {
+            size.value = Math.min(
+              currentResizer._image.naturalWidth * 0.75,
+              currentResizer._image.naturalHeight * 0.75);
             clearTimeout(_timeout);
             resizeFormIsValid();
           }
