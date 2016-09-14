@@ -34,9 +34,17 @@
           this._container.width * INITIAL_SIDE_RATIO,
           this._container.height * INITIAL_SIDE_RATIO);
 
+      //Первоначальное смещение рамки кадра от левого верхнего угла
+      var offset = Math.round((side / 0.75 - side) / 2);
+
       // Изначально предлагаемое кадрирование — часть по центру с размером в 3/4
       // от размера меньшей стороны.
       this._resizeConstraint = new Square(
+          this._container.width / 2 - side / 2,
+          this._container.height / 2 - side / 2,
+          side, offset);
+
+      this._resizeKadr = new SquareKadr(
           this._container.width / 2 - side / 2,
           this._container.height / 2 - side / 2,
           side);
@@ -76,6 +84,8 @@
      */
     _resizeConstraint: null,
 
+    _resizeKadr: null,
+
     /**
      * Отрисовка канваса.
      */
@@ -114,11 +124,10 @@
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
       this._ctx.strokeRect(
-          Math.round((-this._resizeConstraint.side / 2) + this._ctx.lineWidth / 2),
-          Math.round((-this._resizeConstraint.side / 2 + this._ctx.lineWidth / 2)),
-          Math.round(this._resizeConstraint.side - this._ctx.lineWidth * 3 / 2),
-          Math.round(this._resizeConstraint.side - this._ctx.lineWidth * 3 / 2));
-
+          Math.round((-this._resizeKadr.side / 2) + this._ctx.lineWidth / 2),
+          Math.round((-this._resizeKadr.side / 2 + this._ctx.lineWidth / 2)),
+          Math.round(this._resizeKadr.side - this._ctx.lineWidth * 3 / 2),
+          Math.round(this._resizeKadr.side - this._ctx.lineWidth * 3 / 2));
 
       //Отрисовка вертикальных и горизонтальных прямоугольников вокруг области
       // кадрирования, обозначающих черный слой с прозрачностью 80%. Координаты левого
@@ -126,28 +135,27 @@
       var lineWidthKadr = this._ctx.lineWidth;
       this._ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
       this._ctx.fillRect(
-        Math.round(-this._container.width / 2), Math.round(-this._container.height / 2),
-        Math.round(this._container.width / 2 - (this._resizeConstraint.side / 2)),
-        Math.round(this._container.height));
-
-
-      this._ctx.fillRect(
-        Math.round(this._resizeConstraint.side / 2 - lineWidthKadr / 2),
-        Math.round(-this._container.height / 2),
-        Math.round(this._container.width / 2 - (this._resizeConstraint.side / 2 - lineWidthKadr / 2)),
-        Math.round(this._container.height));
+          Math.round(-this._container.width / 2), Math.round(-this._container.height / 2),
+          Math.round(this._container.width / 2 - (this._resizeKadr.side / 2)),
+          Math.round(this._container.height));
 
       this._ctx.fillRect(
-        Math.round((-this._resizeConstraint.side / 2)),
-        Math.round(-this._container.height / 2),
-        Math.floor(this._resizeConstraint.side - lineWidthKadr / 2),
-        Math.round(this._container.height / 2 - (this._resizeConstraint.side / 2)));
+          Math.round(this._resizeKadr.side / 2 - lineWidthKadr / 2),
+          Math.round(-this._container.height / 2),
+          Math.round(this._container.width / 2 - (this._resizeKadr.side / 2 - lineWidthKadr / 2)),
+          Math.round(this._container.height));
 
       this._ctx.fillRect(
-        Math.round((-this._resizeConstraint.side / 2)),
-        Math.round((this._resizeConstraint.side / 2) - lineWidthKadr / 2),
-        Math.floor(this._resizeConstraint.side - lineWidthKadr / 2 ),
-        Math.round(this._container.height / 2 - (this._resizeConstraint.side / 2 - lineWidthKadr / 2)));
+          Math.round((-this._resizeKadr.side / 2)),
+          Math.round(-this._container.height / 2),
+          Math.floor(this._resizeKadr.side - lineWidthKadr / 2),
+          Math.round(this._container.height / 2 - (this._resizeKadr.side / 2)));
+
+      this._ctx.fillRect(
+          Math.round((-this._resizeKadr.side / 2)),
+          Math.round((this._resizeKadr.side / 2) - lineWidthKadr / 2),
+          Math.floor(this._resizeKadr.side - lineWidthKadr / 2 ),
+          Math.round(this._container.height / 2 - (this._resizeKadr.side / 2 - lineWidthKadr / 2)));
 
       //Вывод текста с размерами изображения
       var _width = this._container.width + ' ';
@@ -240,7 +248,6 @@
 
       this._element = element;
       this._element.insertBefore(this._container, this._element.firstChild);
-      // Обработчики начала и конца перетаскивания.
       this._container.addEventListener('mousedown', this._onDragStart);
     },
 
@@ -271,23 +278,47 @@
      * @param {number} side
      */
     setConstraint: function(x, y, side) {
-      if (typeof x !== 'undefined') {
+      if (typeof x !== 'undefined' && x !== null) {
         this._resizeConstraint.x = x;
       }
 
-      if (typeof y !== 'undefined') {
+      if (typeof y !== 'undefined' && y !== null) {
         this._resizeConstraint.y = y;
       }
 
-      if (typeof side !== 'undefined') {
+      if (typeof side !== 'undefined' && side !== null) {
         this._resizeConstraint.side = side;
       }
 
       requestAnimationFrame(function() {
         this.redraw();
         window.dispatchEvent(new CustomEvent('resizerchange'));
+
       }.bind(this));
+
     },
+
+
+    setKadr: function(x, y, side) {
+      if (typeof x !== 'undefined' && x !== null) {
+        this._resizeKadr.x = x;
+      }
+
+      if (typeof y !== 'undefined' && y !== null) {
+        this._resizeKadr.y = y;
+      }
+
+      if (typeof side !== 'undefined' && side !== null) {
+        this._resizeKadr.side = side;
+      }
+      requestAnimationFrame(function() {
+        this.redraw();
+        window.dispatchEvent(new CustomEvent('resizerchange'));
+
+      }.bind(this));
+
+    },
+
 
     /**
      * Удаление. Убирает контейнер из родительского элемента, убирает
@@ -316,11 +347,12 @@
       // созданного изображения.
       var temporaryCanvas = document.createElement('canvas');
       var temporaryCtx = temporaryCanvas.getContext('2d');
-      temporaryCanvas.width = this._resizeConstraint.side;
-      temporaryCanvas.height = this._resizeConstraint.side;
+      temporaryCanvas.width = parseInt(this._resizeKadr.side, 10);
+      temporaryCanvas.height = parseInt(this._resizeKadr.side, 10);
       temporaryCtx.drawImage(this._image,
-          -this._resizeConstraint.x,
-          -this._resizeConstraint.y);
+          -parseInt(this._resizeConstraint.x, 10),
+          -parseInt(this._resizeConstraint.y, 10));
+
       imageToExport.src = temporaryCanvas.toDataURL('image/png');
 
       return imageToExport;
@@ -335,7 +367,14 @@
    * @param {number} side
    * @private
    */
-  var Square = function(x, y, side) {
+  var Square = function(x, y, side, offset) {
+    this.x = x;
+    this.y = y;
+    this.side = side;
+    this.offset = offset;
+  };
+
+  var SquareKadr = function(x, y, side) {
     this.x = x;
     this.y = y;
     this.side = side;
@@ -353,5 +392,5 @@
     this.y = y;
   };
 
-  window.Resizer = Resizer;
+  module.exports = Resizer;
 })();

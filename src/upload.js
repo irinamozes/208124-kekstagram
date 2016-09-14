@@ -1,4 +1,3 @@
-/* global Resizer: true */
 
 /**
  * @fileoverview
@@ -8,6 +7,8 @@
 'use strict';
 
 (function() {
+
+  var Resizer = require('./resizer');
 
   var IMAGE_LOAD_TIMEOUT = 100;
 
@@ -98,13 +99,6 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    if (currentResizer._resizeConstraint !== null) {
-      currentResizer.getConstraint();
-
-      var side = parseInt(currentResizer._resizeConstraint.side, 10);
-      currentResizer.moveConstraint(parseInt(leftPos.value, 10), parseInt(rightPos.value, 10), parseInt(size.value, 10) - side);
-    }
-
     var imageW = currentResizer._image.naturalWidth;
     var imageH = currentResizer._image.naturalHeight;
 
@@ -113,6 +107,7 @@
       return false;
     }
     butFwd.disabled = false;
+    currentResizer.setKadr(leftPos.value, rightPos.value, size.value);
     return true;
   }
 
@@ -195,6 +190,7 @@
         fileReader.onload = function() {
 
           currentResizer = new Resizer(fileReader.result);
+
           currentResizer.setElement(resizeForm);
 
           uploadMessage.classList.add('invisible');
@@ -257,7 +253,6 @@
     evt.preventDefault();
 
     if (resizeFormIsValid()) {
-
       var image = currentResizer.exportImage().src;
 
       var thumbnails = filterForm.querySelectorAll('.upload-filter-preview');
