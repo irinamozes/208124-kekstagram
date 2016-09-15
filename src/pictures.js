@@ -18,14 +18,9 @@ var Picture = require('./picture');
 var utils = require('./utils');
 
 
-var activeFilter = localStorage.getItem('f');
-if (typeof activeFilter !== 'undefined' && activeFilter !== null) {
-  var elemFilter = document.getElementById(activeFilter);
-  elemFilter.setAttribute('checked', 'checked');
-} else {
-  elemFilter = document.getElementById('filter-popular');
-  elemFilter.setAttribute('checked', 'checked');
-}
+var activeFilter = localStorage.getItem('f') || 'filter-popular';
+
+document.querySelector('#' + activeFilter).checked = true;
 
 
 var pageSize = 12;
