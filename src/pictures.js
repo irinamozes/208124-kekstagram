@@ -17,7 +17,10 @@ var loadAndCreate = require('./load');
 var Picture = require('./picture');
 var utils = require('./utils');
 
-var activeFilter = 'filter-popular';
+
+var activeFilter = localStorage.getItem('f') || 'filter-popular';
+
+document.querySelector('#' + activeFilter).checked = true;
 
 
 var pageSize = 12;
@@ -50,6 +53,8 @@ var loadPictures = function(filter, currentPageNumber) {
 var changeFilter = function(filterID) {
   picturesContainer.innerHTML = '';
   activeFilter = filterID;
+  localStorage.clear();
+  localStorage.setItem('f', activeFilter);
   pageNumber = 0;
   loadPictures(filterID, pageNumber);
 };
