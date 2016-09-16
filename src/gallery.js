@@ -1,5 +1,4 @@
 'use strict';
-//var _src;
 var renderedPicture = [];
 var like = 0;
 var comments = 0;
@@ -9,25 +8,21 @@ var likesCount = document.querySelector('.likes-count');
 var commentsCount = document.querySelector('.comments-count');
 
 var Gallery = function() {
-  var self = this;
+
   this.closeGallery = document.querySelector('.gallery-overlay-close');
-  this.closeGallery.onclick = function() {
-    self.hide();
-  };
 
-  var urlPictures = self.urlPictures;
+  this.hide = this.hide.bind(this);
+  this.setActivePicture = this.setActivePicture.bind(this);
+  this.likesCountImage = this.likesCountImage.bind(this);
+  this.commentsCountImage = this.commentsCountImage.bind(this);
 
-  imageGallery.onclick = function() {
-    self.setActivePicture(urlPictures);
-  };
+  this.closeGallery.addEventListener('click', this.hide);
 
-  likesCount.onclick = function() {
-    self.likesCountImage();
-  };
+  imageGallery.addEventListener('click', this.setActivePicture);
 
-  commentsCount.onclick = function() {
-    self.commentsCountImage();
-  };
+  likesCount.addEventListener('click', this.likesCountImage);
+
+  commentsCount.addEventListener('click', this.commentsCountImage);
 
 };
 
