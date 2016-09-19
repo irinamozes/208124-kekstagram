@@ -1,6 +1,9 @@
 'use strict';
 
 (function() {
+
+  window.INITIAL_SIDE_RATIO = 0.75;
+
   /**
    * @constructor
    * @param {string} image
@@ -27,12 +30,13 @@
        * @const
        * @type {number}
        */
-      var INITIAL_SIDE_RATIO = 0.75;
 
       // Размер меньшей стороны изображения.
       var side = Math.min(
-          this._container.width * INITIAL_SIDE_RATIO,
-          this._container.height * INITIAL_SIDE_RATIO);
+          this._container.width * window.INITIAL_SIDE_RATIO,
+          this._container.height * window.INITIAL_SIDE_RATIO);
+
+      //Первоначальный размер кадра
 
       // Изначально предлагаемое кадрирование — часть по центру с размером в 3/4
       // от размера меньшей стороны.
@@ -48,6 +52,7 @@
 
       // Отрисовка изначального состояния канваса.
       this.setConstraint();
+      this.sideBegin = side;
     }.bind(this);
 
     // Фиксирование контекста обработчиков.
@@ -297,16 +302,18 @@
 
     // Положение рамки кадра
   Resizer.prototype.setKadr = function(x, y, side) {
-    if (typeof x !== 'undefined' && x !== null) {
-      this._resizeKadr.x = x;
-    }
+    if (this._resizeKadr !== null) {
+      if (typeof x !== 'undefined' && x !== null) {
+        this._resizeKadr.x = x;
+      }
 
-    if (typeof y !== 'undefined' && y !== null) {
-      this._resizeKadr.y = y;
-    }
+      if (typeof y !== 'undefined' && y !== null) {
+        this._resizeKadr.y = y;
+      }
 
-    if (typeof side !== 'undefined' && side !== null) {
-      this._resizeKadr.side = side;
+      if (typeof side !== 'undefined' && side !== null) {
+        this._resizeKadr.side = side;
+      }
     }
     requestAnimationFrame(function() {
       this.redraw();
@@ -346,15 +353,15 @@
     var temporaryCtx = temporaryCanvas.getContext('2d');
     temporaryCanvas.width = parseInt(this._resizeKadr.side, 10);
     temporaryCanvas.height = parseInt(this._resizeKadr.side, 10);
+
     temporaryCtx.drawImage(this._image,
-          -parseInt(this._resizeConstraint.x, 10),
-          -parseInt(this._resizeConstraint.y, 10));
+            Math.round(-this.sideBegin / 2 + parseInt(this._resizeKadr.side / 2, 10) - this._resizeConstraint.x),
+            Math.round(-this.sideBegin / 2 + parseInt(this._resizeKadr.side / 2, 10) - this._resizeConstraint.y));
 
     imageToExport.src = temporaryCanvas.toDataURL('image/png');
 
     return imageToExport;
   };
-//  };
 
   /**
    * Вспомогательный тип, описывающий квадрат.
@@ -365,6 +372,7 @@
    * @private
    */
   var Square = function(x, y, side) {
+  //var Square = function(x, y) {
     this.x = x;
     this.y = y;
     this.side = side;

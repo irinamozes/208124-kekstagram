@@ -2,7 +2,7 @@
 'use strict';
 var Gallery = require('./gallery');
 var gallery = new Gallery();
-
+var addr = 'http://localhost:1506/';
 var elementToClone;
 
 var templateElement = document.querySelector('template');
@@ -65,6 +65,8 @@ Picture.prototype.pictureClick = function(evt) {
     return;
   } else {
     window._src = target.src;
+    evt.preventDefault();
+    location.hash = '#photo/' + window._src.replace(addr, '');
     gallery.show(window._src);
   }
 };
