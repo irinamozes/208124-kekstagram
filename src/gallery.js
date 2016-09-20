@@ -1,5 +1,4 @@
 'use strict';
-//var _src;
 var renderedPicture = [];
 var like = 0;
 var comments = 0;
@@ -7,28 +6,26 @@ var fhotoGallery = document.querySelector('.gallery-overlay');
 var imageGallery = document.querySelector('.gallery-overlay-image');
 var likesCount = document.querySelector('.likes-count');
 var commentsCount = document.querySelector('.comments-count');
+var addr = 'http://localhost:1506/';
 
 var Gallery = function() {
-  var self = this;
+
   this.closeGallery = document.querySelector('.gallery-overlay-close');
-  this.closeGallery.onclick = function() {
-    self.hide();
-  };
 
-  var urlPictures = self.urlPictures;
+  this.hide = this.hide.bind(this);
+  this.setActivePicture = this.setActivePicture.bind(this);
+  this.likesCountImage = this.likesCountImage.bind(this);
+  this.commentsCountImage = this.commentsCountImage.bind(this);
 
-  imageGallery.onclick = function() {
-    self.setActivePicture(urlPictures);
-  };
+  this.closeGallery.addEventListener('click', this.hide);
 
-  likesCount.onclick = function() {
-    self.likesCountImage();
-  };
+  imageGallery.addEventListener('click', this.setActivePicture);
 
-  commentsCount.onclick = function() {
-    self.commentsCountImage();
-  };
+  likesCount.addEventListener('click', this.likesCountImage);
 
+  commentsCount.addEventListener('click', this.commentsCountImage);
+
+  window.addEventListener('hashchange', this.onchangeLocHash.bind(this));
 };
 
 
@@ -38,8 +35,8 @@ Gallery.prototype.show = function(__src__) {
   return __src__;
 };
 
-
 Gallery.prototype.hide = function() {
+  location.hash = '';
   fhotoGallery.classList.add('invisible');
   Gallery.prototype.hideCount();
 };
@@ -56,9 +53,6 @@ Gallery.prototype.setActivePicture = function() {
   Gallery.prototype.hideCount();
 
   imageGallery.src = '';
-
-  var addr = 'http://localhost:1506/';
-
 
   var notFailureList = Array.prototype.slice.call(document.querySelectorAll('.picture'));
 
@@ -79,7 +73,7 @@ Gallery.prototype.setActivePicture = function() {
     n = 0;
   }
   window._src = renderedPicture[n];
-
+  location.hash = 'photo/' + window._src.replace(addr, '');
   imageGallery.src = window._src;
 
 };
@@ -92,6 +86,14 @@ Gallery.prototype.likesCountImage = function() {
 Gallery.prototype.commentsCountImage = function() {
   comments = comments + 1;
   commentsCount.textContent = comments;
+};
+
+
+Gallery.prototype.onchangeLocHash = function() {
+  var hash = location.hash.match(/#photo\/(\S+)/);
+  if (hash) {
+    Gallery.prototype.show(addr + hash[1]);
+  }
 };
 
 module.exports = Gallery;

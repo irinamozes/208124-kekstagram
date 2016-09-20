@@ -94,22 +94,50 @@
   rightPos.min = 0;
   size.min = 50;
 
+
+//Синхронизирует данные ресайзера и формы при передвижении изображения мышкой
+  function sinchFormResize() {
+    if (currentResizer !== null) {
+      if (currentResizer.getConstraint().x > 0) {
+        leftPos.value = currentResizer.getConstraint().x;
+      } else {
+        leftPos.value = 0;
+      }
+
+      if (currentResizer.getConstraint().y > 0) {
+        rightPos.value = currentResizer.getConstraint().y;
+      } else {
+        rightPos.value = 0;
+      }
+      if (parseInt(leftPos.value, 10) + parseInt(size.value, 10) > currentResizer._image.naturalWidth || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > currentResizer._image.naturalHeight) {
+        butFwd.disabled = true;
+
+      } else {
+        butFwd.disabled = false;
+      }
+    }
+  }
+
+  window.addEventListener('resizerchange', sinchFormResize);
+
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
-   */
+ */
   function resizeFormIsValid() {
     var imageW = currentResizer._image.naturalWidth;
     var imageH = currentResizer._image.naturalHeight;
 
+    size.max = Math.min(imageW - leftPos.value, imageH - rightPos.value);
     if (parseInt(leftPos.value, 10) + parseInt(size.value, 10) > imageW || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > imageH) {
       butFwd.disabled = true;
       return false;
     }
     butFwd.disabled = false;
-    currentResizer.setKadr(leftPos.value, rightPos.value, size.value);
+    currentResizer.setKadr(parseInt(leftPos.value, 10), parseInt(rightPos.value, 10), parseInt(size.value, 10));
     return true;
   }
+
 
   /**
    * Форма загрузки изображения.
@@ -202,16 +230,20 @@
           hideMessage();
 
           _timeout = setTimeout(function() {
+            leftPos.value = 0;
+            rightPos.value = 0;
             size.value = Math.min(
-              currentResizer._image.naturalWidth * 0.75,
-              currentResizer._image.naturalHeight * 0.75);
+                currentResizer._image.naturalWidth * window.INITIAL_SIDE_RATIO,
+                currentResizer._image.naturalHeight * window.INITIAL_SIDE_RATIO);
             resizeFormIsValid();
           }, IMAGE_LOAD_TIMEOUT);
 
           if(currentResizer._image.naturalWidth !== 0 && currentResizer._image.naturalHeight !== 0) {
+            leftPos.value = 0;
+            rightPos.value = 0;
             size.value = Math.min(
-              currentResizer._image.naturalWidth * 0.75,
-              currentResizer._image.naturalHeight * 0.75);
+                currentResizer._image.naturalWidth * window.INITIAL_SIDE_RATIO,
+                currentResizer._image.naturalHeight * window.INITIAL_SIDE_RATIO);
             clearTimeout(_timeout);
             resizeFormIsValid();
           }

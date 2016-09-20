@@ -34,6 +34,9 @@ var renderPicturesCallback = function(arr) {
     pictur = new Picture(picture).element;
     picturesContainer.appendChild(pictur);
   });
+  var event = document.createEvent('Event');
+  event.initEvent('hashchange', true, true);
+  document.dispatchEvent(event);
 };
 
 var renderPicturesCallback2 = function(_length) {
