@@ -1,4 +1,3 @@
-/* global Resizer: true */
 
 /**
  * @fileoverview
@@ -8,6 +7,8 @@
 'use strict';
 
 (function() {
+
+  var Resizer = require('./resizer');
 
   var IMAGE_LOAD_TIMEOUT = 100;
 
@@ -50,7 +51,7 @@
   var uploadFilter;
 
   //  Вычисление даты ближайшего дня рождения Grace Hopper
-  var _expiresDate = require('./utils');
+  var utils = require('./utils');
 
   /**
    * Удаляет текущий объект {@link Resizer}, чтобы создать новый с другим
@@ -93,21 +94,50 @@
   rightPos.min = 0;
   size.min = 50;
 
+
+//Синхронизирует данные ресайзера и формы при передвижении изображения мышкой
+  function sinchFormResize() {
+    if (currentResizer !== null) {
+      if (currentResizer.getConstraint().x > 0) {
+        leftPos.value = currentResizer.getConstraint().x;
+      } else {
+        leftPos.value = 0;
+      }
+
+      if (currentResizer.getConstraint().y > 0) {
+        rightPos.value = currentResizer.getConstraint().y;
+      } else {
+        rightPos.value = 0;
+      }
+      if (parseInt(leftPos.value, 10) + parseInt(size.value, 10) > currentResizer._image.naturalWidth || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > currentResizer._image.naturalHeight) {
+        butFwd.disabled = true;
+
+      } else {
+        butFwd.disabled = false;
+      }
+    }
+  }
+
+  window.addEventListener('resizerchange', sinchFormResize);
+
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
-   */
+ */
   function resizeFormIsValid() {
     var imageW = currentResizer._image.naturalWidth;
     var imageH = currentResizer._image.naturalHeight;
 
+    size.max = Math.min(imageW - leftPos.value, imageH - rightPos.value);
     if (parseInt(leftPos.value, 10) + parseInt(size.value, 10) > imageW || (parseInt(rightPos.value, 10) + parseInt(size.value, 10)) > imageH) {
       butFwd.disabled = true;
       return false;
     }
     butFwd.disabled = false;
+    currentResizer.setKadr(parseInt(leftPos.value, 10), parseInt(rightPos.value, 10), parseInt(size.value, 10));
     return true;
   }
+
 
   /**
    * Форма загрузки изображения.
@@ -188,6 +218,7 @@
         fileReader.onload = function() {
 
           currentResizer = new Resizer(fileReader.result);
+
           currentResizer.setElement(resizeForm);
 
           uploadMessage.classList.add('invisible');
@@ -199,10 +230,20 @@
           hideMessage();
 
           _timeout = setTimeout(function() {
+            leftPos.value = 0;
+            rightPos.value = 0;
+            size.value = Math.min(
+                currentResizer._image.naturalWidth * window.INITIAL_SIDE_RATIO,
+                currentResizer._image.naturalHeight * window.INITIAL_SIDE_RATIO);
             resizeFormIsValid();
           }, IMAGE_LOAD_TIMEOUT);
 
           if(currentResizer._image.naturalWidth !== 0 && currentResizer._image.naturalHeight !== 0) {
+            leftPos.value = 0;
+            rightPos.value = 0;
+            size.value = Math.min(
+                currentResizer._image.naturalWidth * window.INITIAL_SIDE_RATIO,
+                currentResizer._image.naturalHeight * window.INITIAL_SIDE_RATIO);
             clearTimeout(_timeout);
             resizeFormIsValid();
           }
@@ -316,7 +357,7 @@
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
-    browserCookies.set('upload-filter', selectedFilter, {expires: _expiresDate() });
+    browserCookies.set('upload-filter', selectedFilter, {expires: utils.cookiesTime() });
   };
 
   cleanupResizer();
