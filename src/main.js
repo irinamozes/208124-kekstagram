@@ -5,3 +5,4 @@ require('./pictures');
 require('./picture');
 require('./gallery');
 require('./utils');
+require('./baseComponent');

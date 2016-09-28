@@ -2,61 +2,50 @@
 'use strict';
 var Gallery = require('./gallery');
 var gallery = new Gallery();
+var utils = require('./utils');
+var BaseComponent = require('./baseComponent');
+
+
 var addr = 'http://localhost:1506/';
-var elementToClone;
-
-var templateElement = document.querySelector('template');
-
-if ('content' in templateElement) {
-  elementToClone = templateElement.content.querySelector('.picture');
-} else {
-  elementToClone = templateElement.querySelector('.picture');
-}
-
-/** @constant {number} */
-var IMAGE_LOAD_TIMEOUT = 10000;
-
-/**
- * @param {Object} data
- * @param {HTMLElement} container
- * @return {HTMLElement}
- */
-
-var getPictureElement = function(data) {
-  var element = elementToClone.cloneNode(true);
-  var _picture = new Image();
-  var _pictureTimeout;
-  _picture.onload = function(evt) {
-    clearTimeout(_pictureTimeout);
-
-    element.querySelector('img').src = evt.target.src;
-
-    _picture.width = '182';
-    _picture.height = '182';
-  };
-  _picture.onerror = function() {
-    element.classList.add('picture-load-failure');
-  };
-
-  _picture.src = 'http://localhost:1506/' + data.url;
-
-  _pictureTimeout = setTimeout(function() {
-
-    _picture.src = '';
-    element.classList.add('picture-load-failure');
-  }, IMAGE_LOAD_TIMEOUT);
-  return element;
-};
 
 var Picture = function(data) {
+
   this.data = data;
-  this.element = getPictureElement(data);
+
+  var IMAGE_LOAD_TIMEOUT = 10000;
+
+  this.templateElement = document.querySelector('#picture-template');
+
+  if ('content' in this.templateElement) {
+    this.elementToClone = this.templateElement.content.querySelector('.picture');
+  } else {
+    this.elementToClone = this.templateElement.querySelector('.picture');
+  }
+
+  this.element = this.elementToClone.cloneNode(true);
+
+  BaseComponent.call(this, this.element);
+
+  this.imageElement = this.element.querySelector('img');
+  this._picture = new Image();
+
+  this.onPictureLoad = this.onPictureLoad.bind(this);
+  this._picture.addEventListener('load', this.onPictureLoad);
+
+  this._picture.src = addr + this.data.url;
+
+  this.onPictureError = this.onPictureError.bind(this);
+  this._picture.addEventListener('error', this.onPictureError);
 
   this.pictureClick = this.pictureClick.bind(this);
-
   this.element.addEventListener('click', this.pictureClick);
 
+  this._timeout = this._timeout.bind(this);
+  this._pictureTimeout = setTimeout(this._timeout, IMAGE_LOAD_TIMEOUT);
 };
+
+utils.inherit(Picture, BaseComponent);
+
 
 
 Picture.prototype.pictureClick = function(evt) {
@@ -71,10 +60,32 @@ Picture.prototype.pictureClick = function(evt) {
   }
 };
 
+Picture.prototype.onPictureLoad = function(evt) {
+  clearTimeout(this._pictureTimeout);
+  this._picture.src = addr + this.data.url;
+  this.imageElement.src = evt.target.src;
+  this._picture.width = 182;
+  this._picture.height = 182;
+  this.remove();
+};
+
+Picture.prototype.onPictureError = function() {
+  clearTimeout(this._pictureTimeout);
+  this.element.classList.add('picture-load-failure');
+  this.remove();
+  BaseComponent.prototype.remove.call(this);
+};
+
+Picture.prototype._timeout = function() {
+  this._picture.src = '';
+  this.element.classList.add('picture-load-failure');
+};
 
 Picture.prototype.remove = function() {
-  this.element.removeEventListener('click', this.pictureClick);
+  this.element.removeEventListener('load', this.onPictureLoad);
+  this.element.removeEventListener('error', this.onPictureError);
 };
+
 
 
 module.exports = Picture;

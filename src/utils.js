@@ -22,7 +22,13 @@ module.exports = {
       clearTimeout(fn._timeoutID);
       fn._timeoutID = setTimeout(fn, timeout);
     };
-  }
+  },
 
+  inherit: function(childComponent, parentComponent) {
+    var EmptyConstructor = function() {};
+    EmptyConstructor.prototype = parentComponent.prototype;
+    childComponent.prototype = new EmptyConstructor();
+    childComponent.prototype.constructor = childComponent;
+  }
 
 };
