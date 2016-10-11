@@ -1,10 +1,14 @@
 'use strict';
+
+var picturesContainer = document.querySelector('.pictures');
+
 var renderedPicture = [];
 var like = 0;
 var comments = 0;
 var fhotoGallery = document.querySelector('.gallery-overlay');
 var imageGallery = document.querySelector('.gallery-overlay-image');
 var likesCount = document.querySelector('.likes-count');
+var commentsWord = document.querySelector('.gallery-overlay-controls-comments');
 var commentsCount = document.querySelector('.comments-count');
 var addr = 'http://localhost:1506/';
 
@@ -22,23 +26,25 @@ var Gallery = function() {
   imageGallery.addEventListener('click', this.setActivePicture);
 
   likesCount.addEventListener('click', this.likesCountImage);
-
-  commentsCount.addEventListener('click', this.commentsCountImage);
-
+  commentsWord.addEventListener('click', this.commentsCountImage);
   window.addEventListener('hashchange', this.onchangeLocHash.bind(this));
 };
 
 
-Gallery.prototype.show = function(__src__) {
+Gallery.prototype.show = function(__src__, datLikes, datComments) {
   fhotoGallery.classList.remove('invisible');
   imageGallery.src = __src__;
+
+  likesCount.textContent = datLikes;
+  commentsCount.textContent = datComments;
+
   return __src__;
 };
 
 Gallery.prototype.hide = function() {
   location.hash = '';
   fhotoGallery.classList.add('invisible');
-  Gallery.prototype.hideCount();
+
 };
 
 Gallery.prototype.hideCount = function() {
@@ -49,8 +55,6 @@ Gallery.prototype.hideCount = function() {
 };
 
 Gallery.prototype.setActivePicture = function() {
-
-  Gallery.prototype.hideCount();
 
   imageGallery.src = '';
 
@@ -74,25 +78,31 @@ Gallery.prototype.setActivePicture = function() {
   }
   window._src = renderedPicture[n];
   location.hash = 'photo/' + window._src.replace(addr, '');
-  imageGallery.src = window._src;
 
+  var pictureSmallLike = picturesContainer.childNodes[n + 1].querySelector('.picture-likes');
+  likesCount.textContent = pictureSmallLike.textContent;
+
+  var pictureSmallComment = picturesContainer.childNodes[n + 1].querySelector('.picture-comments');
+  commentsCount.textContent = pictureSmallComment.textContent;
+
+  imageGallery.src = window._src;
 };
 
 Gallery.prototype.likesCountImage = function() {
-  like = like + 1;
-  likesCount.textContent = like;
+  like = 1;
+  likesCount.textContent = Number(likesCount.textContent) + like;
 };
 
 Gallery.prototype.commentsCountImage = function() {
-  comments = comments + 1;
-  commentsCount.textContent = comments;
+  comments = 1;
+  commentsCount.textContent = Number(commentsCount.textContent) + comments;
 };
 
 
 Gallery.prototype.onchangeLocHash = function() {
   var hash = location.hash.match(/#photo\/(\S+)/);
   if (hash) {
-    Gallery.prototype.show(addr + hash[1]);
+    Gallery.prototype.show(addr + hash[1], likesCount.textContent, commentsCount.textContent);
   }
 };
 

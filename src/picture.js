@@ -4,6 +4,7 @@ var Gallery = require('./gallery');
 var gallery = new Gallery();
 var utils = require('./utils');
 var BaseComponent = require('./baseComponent');
+var PictureData = require('./pictureServerData');
 
 
 var addr = 'http://localhost:1506/';
@@ -22,7 +23,12 @@ var Picture = function(data) {
     this.elementToClone = this.templateElement.querySelector('.picture');
   }
 
+  //this.dataPicture = new PictureData(this.data);
+
   this.element = this.elementToClone.cloneNode(true);
+
+  this.imageLikes = this.element.querySelector('.picture-likes');
+  this.imageComments = this.element.querySelector('.picture-comments');
 
   BaseComponent.call(this, this.element);
 
@@ -46,8 +52,6 @@ var Picture = function(data) {
 
 utils.inherit(Picture, BaseComponent);
 
-
-
 Picture.prototype.pictureClick = function(evt) {
   var target = evt.target;
   if (target.tagName !== 'IMG') {
@@ -55,8 +59,9 @@ Picture.prototype.pictureClick = function(evt) {
   } else {
     window._src = target.src;
     evt.preventDefault();
+    var dataPicture = new PictureData(this.data);
     location.hash = '#photo/' + window._src.replace(addr, '');
-    gallery.show(window._src);
+    gallery.show(window._src, dataPicture.likes, dataPicture.comments);
   }
 };
 
@@ -66,6 +71,9 @@ Picture.prototype.onPictureLoad = function(evt) {
   this.imageElement.src = evt.target.src;
   this._picture.width = 182;
   this._picture.height = 182;
+  this.imageLikes.textContent = this.data.likes;
+  this.imageComments.textContent = this.data.comments;
+
   this.remove();
 };
 
