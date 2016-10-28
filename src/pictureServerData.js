@@ -1,5 +1,6 @@
 'use strict';
 var likesCount = document.querySelector('.likes-count');
+
 var PictureData = function(picture) {
   this.likes = picture.likes;
   //this.likeState = false;
@@ -14,9 +15,9 @@ PictureData.prototype.onOverlayClick = function(elemLikesCount) {
 
 };
 
-PictureData.prototype.setLikesCount = function(elemLikesCount) {
+PictureData.prototype.setLikesCount = function() {
   var like = 1;
-  elemLikesCount.textContent = Number(elemLikesCount.textContent) + like;
+  likesCount.textContent = Number(likesCount.textContent) + like;
 };
 
 module.exports = PictureData;

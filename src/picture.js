@@ -6,7 +6,6 @@ var utils = require('./utils');
 var BaseComponent = require('./baseComponent');
 var PictureData = require('./pictureServerData');
 
-
 var addr = 'http://localhost:1506/';
 
 var Picture = function(data) {
@@ -23,7 +22,7 @@ var Picture = function(data) {
     this.elementToClone = this.templateElement.querySelector('.picture');
   }
 
-  //this.dataPicture = new PictureData(this.data);
+  this.dataPicture = new PictureData(this.data);
 
   this.element = this.elementToClone.cloneNode(true);
 
@@ -48,6 +47,9 @@ var Picture = function(data) {
 
   this._timeout = this._timeout.bind(this);
   this._pictureTimeout = setTimeout(this._timeout, IMAGE_LOAD_TIMEOUT);
+
+  this.remove = this.remove.bind(this);
+
 };
 
 utils.inherit(Picture, BaseComponent);
@@ -59,22 +61,24 @@ Picture.prototype.pictureClick = function(evt) {
   } else {
     window._src = target.src;
     evt.preventDefault();
-    var dataPicture = new PictureData(this.data);
     location.hash = '#photo/' + window._src.replace(addr, '');
-    gallery.show(window._src, dataPicture.likes, dataPicture.comments);
+    this.imageLikes = this.element.querySelector('.picture-likes');
+    this.imageComments = this.element.querySelector('.picture-comments');
+    gallery.show(window._src, this.imageLikes.textContent, this.imageComments.textContent);
   }
 };
 
 Picture.prototype.onPictureLoad = function(evt) {
   clearTimeout(this._pictureTimeout);
+
   this._picture.src = addr + this.data.url;
   this.imageElement.src = evt.target.src;
   this._picture.width = 182;
   this._picture.height = 182;
   this.imageLikes.textContent = this.data.likes;
   this.imageComments.textContent = this.data.comments;
-
   this.remove();
+
 };
 
 Picture.prototype.onPictureError = function() {
@@ -90,8 +94,8 @@ Picture.prototype._timeout = function() {
 };
 
 Picture.prototype.remove = function() {
-  this.element.removeEventListener('load', this.onPictureLoad);
-  this.element.removeEventListener('error', this.onPictureError);
+  this._picture.removeEventListener('load', this.onPictureLoad);
+  this._picture.removeEventListener('error', this.onPictureError);
 };
 
 
