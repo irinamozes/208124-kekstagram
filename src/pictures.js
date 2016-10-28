@@ -5,9 +5,6 @@ var addr = 'http://localhost:1506/api/pictures';
 var THROTTLE_TIMEOUT = 100;
 
 var picturesContainer = document.querySelector('.pictures');
-//var likesCount = document.querySelector('.picture-likes');
-//var commentsWord = document.querySelector('.gallery-overlay-controls-comments');
-//var commentsCount = document.querySelector('.picture-comments');
 
 var filtersBloc = document.querySelector('.filters');
 
@@ -17,7 +14,7 @@ var footer = document.querySelector('footer');
 
 var loadAndCreate = require('./load');
 var Picture = require('./picture');
-//var PictureData = require('./pictureServerData');
+
 var utils = require('./utils');
 
 
@@ -37,11 +34,6 @@ var renderPicturesCallback = function(arr) {
   arr.forEach(function(picture) {
     pictur = new Picture(picture).element;
     picturesContainer.appendChild(pictur);
-    //var picturData = new PictureData(picture);
-    //console.log(picturData.likes);
-    //likesCount.textContent = picturData.likes;
-    //console.log(likesCount.textContent);
-    //commentsCount.textContent = picturData.comments;
   });
 
   var event = document.createEvent('Event');
